@@ -1,0 +1,6 @@
+cloudpickle==3.1.1
+gym==0.26.2
+gym-notices==0.0.8
+numpy==1.26.4
+rlgym-sim @ git+https://github.com/AechPro/rocket-league-gym-sim@a1240530239d6b7671147b4f97e9b5e130d0acce
+RocketSim==2.1.1.post1
