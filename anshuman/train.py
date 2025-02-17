@@ -6,21 +6,12 @@ from metricLogger import MyMetricLogger
 def build_rocketsim_env():
     import rlgym_sim
     from rlgym_sim.utils.reward_functions import CombinedReward
-    from rlgym_sim.utils.reward_functions.common_rewards import (
-        LiuDistancePlayerToBallReward,
-        VelocityPlayerToBallReward,
-        VelocityBallToGoalReward,
-        EventReward,
-    )
+    from rlgym_sim.utils.reward_functions.common_rewards import *
     from rlgym_sim.utils.obs_builders import DefaultObs
-    from rlgym_sim.utils.terminal_conditions.common_conditions import (
-        NoTouchTimeoutCondition,
-        GoalScoredCondition,
-        TimeoutCondition,
-    )
+    from rlgym_sim.utils.terminal_conditions.common_conditions import *
     from rlgym_sim.utils import common_values
     from rlgym_sim.utils.action_parsers import DiscreteAction
-    from rewards import DontMoveReward
+    from rewards import *
 
     spawn_opponents = True
     team_size = 1
@@ -35,12 +26,11 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    # rewards_to_combine = ()
-    # reward_weights = (-1,)
+    rewards = ((EventReward(touch=1), 50), (SpeedTowardsBallReward(), 5))
 
-    # reward_fn = CombinedReward(reward_functions=rewards_to_combine,
-    # 						   reward_weights=reward_weights)
-    reward_fn = DontMoveReward()
+    reward_fn = CombinedReward(
+        reward_functions=[r[0] for r in rewards], reward_weights=[r[1] for r in rewards]
+    )
 
     obs_builder = DefaultObs(
         pos_coef=np.asarray(
@@ -81,7 +71,7 @@ if __name__ == "__main__":
     # educated guess - could be slightly higher or lower
     # min_inference_size = max(1, int(round(n_proc * 0.9)))
 
-    N_PROC = 64
+    N_PROC = 48
     TS_PER_ITER = 50_000
     NETWORK_SHAPE = (2048, 2048, 1024, 1024)
     PPO_EPOCHS = 2
