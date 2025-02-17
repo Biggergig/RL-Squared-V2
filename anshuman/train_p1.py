@@ -25,7 +25,6 @@ def build_rocketsim_env():
 
     action_parser = DiscreteAction()
     terminal_conditions = [
-        NoTouchTimeoutCondition(timeout_ticks),
         GoalScoredCondition(),
     ]
 
@@ -100,12 +99,12 @@ if __name__ == "__main__":
     # min_inference_size = max(1, int(round(n_proc * 0.9)))
 
     N_PROC = 48
-    TS_PER_ITER = 50_000
+    TS_PER_ITER = 100_000
     NETWORK_SHAPE = (2048, 2048, 1024, 1024)
     PPO_EPOCHS = 2
-    PPO_MINIBATCH_SIZE = 50_000
+    PPO_MINIBATCH_SIZE = 50_000  # test for SPM
     PPO_ENT_COEF = 0.01
-    NET_LR = 2e-4
+    NET_LR = 1e-4
     SAVE_EVERY_TS = 250_000
     CHECKPOINT_SAVE_FOLDER = "data/checkpoints/p1/ppo"
     CHECKPOINT_LOAD_DIR = None
