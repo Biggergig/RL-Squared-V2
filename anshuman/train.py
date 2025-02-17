@@ -59,9 +59,7 @@ def build_rocketsim_env():
         reward_fn=reward_fn,
         obs_builder=obs_builder,
         action_parser=action_parser,
-        state_setter=RandomState(
-            True, True, True
-        ),  # Randomized speeds for cars and ball, but on floor
+        state_setter=RandomState(True, True),  # Randomized speeds for cars + ball
     )
 
     return env
@@ -75,6 +73,8 @@ if __name__ == "__main__":
     if DEBUG:
         print("IN DEBUG MODE")
 
+    NEWRUN = "new" in argv
+
     metrics_logger = MyMetricLogger()
 
     # educated guess - could be slightly higher or lower
@@ -87,9 +87,11 @@ if __name__ == "__main__":
     PPO_MINIBATCH_SIZE = 50_000
     PPO_ENT_COEF = 0.01
     NET_LR = 2e-4
+    SAVE_EVERY_TS = 250_000
 
     if DEBUG:
         N_PROC = 1
+        SAVE_EVERY_TS = 1_000_000_000_000
 
     learner = Learner(
         build_rocketsim_env,
@@ -109,14 +111,14 @@ if __name__ == "__main__":
         policy_lr=NET_LR,
         log_to_wandb=not DEBUG,
         checkpoints_save_folder=None,
-        save_every_ts=150_000 if not DEBUG else 1_000_000_000_000,
+        save_every_ts=SAVE_EVERY_TS,
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
         #   min_inference_size=min_inference_size,
         #   standardize_returns=True,
         #   standardize_obs=False,
-        checkpoint_load_folder="latest" if not DEBUG else None,
-        load_wandb=False,
+        checkpoint_load_folder="latest" if not (DEBUG or NEWRUN) else None,
+        load_wandb=True,
     )
 
     with open(__file__, "r") as f:
