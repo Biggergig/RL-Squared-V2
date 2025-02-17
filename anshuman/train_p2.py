@@ -20,7 +20,7 @@ def build_rocketsim_env():
     team_size = 1
     game_tick_rate = 120
     tick_skip = 8
-    timeout_seconds = 0
+    timeout_seconds = 120
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
     action_parser = DiscreteAction()
@@ -37,6 +37,8 @@ def build_rocketsim_env():
         ),
         (VelocityBallToGoalReward(), 5),
         (VelocityBallToGoalReward(own_goal=True), -3),
+        (LiuDistanceBallToGoalReward(), 5),
+        (LiuDistanceBallToGoalReward(own_goal=True), -3),
         (VelocityPlayerToBallReward(), 2),
         (FaceBallReward(), 0.5),
         (InAirReward(), 0.15),
@@ -93,20 +95,18 @@ if __name__ == "__main__":
 
     metrics_logger = MyMetricLogger()
 
-    # educated guess - could be slightly higher or lower
-    # min_inference_size = max(1, int(round(n_proc * 0.9)))
-
     N_PROC = 48
+    min_inference_size = max(1, int(round(N_PROC * 0.9)))
     TS_PER_ITER = 100_000
     NETWORK_SHAPE = (2048, 2048, 1024, 1024)
     PPO_EPOCHS = 2
     PPO_MINIBATCH_SIZE = 50_000  # test for SPM
     PPO_ENT_COEF = 0.01
-    NET_LR = 1e-4
+    NET_LR = 2e-4
     SAVE_EVERY_TS = 250_000
     CHECKPOINT_SAVE_FOLDER = "data/checkpoints/p1/ppo"
     CHECKPOINT_LOAD_DIR = None
-    for loadFrom in (1, 0):
+    for loadFrom in (2, 1, 0):
         try:
             CHECKPOINT_LOAD_DIR = f"data/checkpoints/p{loadFrom}/" + str(
                 max(
@@ -117,6 +117,9 @@ if __name__ == "__main__":
             CHECKPOINT_LOAD_DIR += "/" + max(
                 os.listdir(CHECKPOINT_LOAD_DIR), key=lambda d: int(d.split("-")[-1])
             )
+            if loadFrom != 2:
+                NEWWANDB = True
+                print("Setting new wandb since loading from prior phase")
             break
         except (ValueError, FileNotFoundError):
             print("No checkpoints from phase", loadFrom)
@@ -142,18 +145,18 @@ if __name__ == "__main__":
         ppo_minibatch_size=PPO_MINIBATCH_SIZE,
         ppo_ent_coef=PPO_ENT_COEF,
         critic_lr=NET_LR,
-        policy_lr=NET_LR,
+        policy_lr=0,
         log_to_wandb=not DEBUG,
-        wandb_run_name="PPO-p1-" + str(int(time()) % 1_000_000),
-        wandb_project_name="ans_phase1",
+        wandb_run_name="PPO-p2-" + str(int(time()) % 1_000_000),
+        wandb_project_name="ans_phase2",
         checkpoints_save_folder=CHECKPOINT_SAVE_FOLDER,
         save_every_ts=SAVE_EVERY_TS,
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
         checkpoint_load_folder=CHECKPOINT_LOAD_DIR,
         load_wandb=not (DEBUG or NEWWANDB),
-        #   min_inference_size=min_inference_size,
-        #   standardize_returns=True,
+        min_inference_size=min_inference_size,
+        standardize_returns=True,
         #   standardize_obs=False,
     )
 
@@ -163,3 +166,5 @@ if __name__ == "__main__":
 
     if "dry" not in argv:
         learner.learn()
+
+# Goal is to standardize returns and retrain just critic
