@@ -30,9 +30,16 @@ def build_rocketsim_env():
     ]
 
     rewards = (
-        (EventReward(touch=1), 50),
-        (VelocityPlayerToBallReward(), 5),
-        (FaceBallReward(), 1),
+        (
+            EventReward(
+                goal=10, concede=-10, shot=3, save=3, boost_pickup=0.1, touch=0.25
+            ),
+            1,
+        ),
+        (VelocityBallToGoalReward(), 5),
+        (VelocityBallToGoalReward(own_goal=True), -3),
+        (VelocityPlayerToBallReward(), 2),
+        (FaceBallReward(), 0.5),
         (InAirReward(), 0.15),
     )
 
@@ -83,6 +90,10 @@ if __name__ == "__main__":
     if NEWRUN:
         print("Creating new run")
 
+    NEWWANDB = "newwandb" in argv or NEWRUN
+    if NEWWANDB:
+        print("Creating new wandb run")
+
     metrics_logger = MyMetricLogger()
 
     # educated guess - could be slightly higher or lower
@@ -96,16 +107,22 @@ if __name__ == "__main__":
     PPO_ENT_COEF = 0.01
     NET_LR = 2e-4
     SAVE_EVERY_TS = 250_000
-    CHECKPOINT_SAVE_FOLDER = "data/checkpoints"
-    try:
-        CHECKPOINT_LOAD_DIR = "data/checkpoints/" + str(
-            max(os.listdir("data/checkpoints/"), key=lambda d: int(d.split("-")[-1]))
-        )
-        CHECKPOINT_LOAD_DIR += "/" + max(
-            os.listdir(CHECKPOINT_LOAD_DIR), key=lambda d: int(d.split("-")[-1])
-        )
-    except (ValueError, FileNotFoundError):
-        CHECKPOINT_LOAD_DIR = None
+    CHECKPOINT_SAVE_FOLDER = "data/checkpoints/p1/ppo"
+    CHECKPOINT_LOAD_DIR = None
+    for loadFrom in (1, 0):
+        try:
+            CHECKPOINT_LOAD_DIR = f"data/checkpoints/p{loadFrom}/" + str(
+                max(
+                    os.listdir(f"data/checkpoints/p{loadFrom}/"),
+                    key=lambda d: int(d.split("-")[-1]),
+                )
+            )
+            CHECKPOINT_LOAD_DIR += "/" + max(
+                os.listdir(CHECKPOINT_LOAD_DIR), key=lambda d: int(d.split("-")[-1])
+            )
+            break
+        except (ValueError, FileNotFoundError):
+            print("No checkpoints from phase", loadFrom)
 
     if DEBUG:
         N_PROC = 1
@@ -118,7 +135,7 @@ if __name__ == "__main__":
         n_proc=N_PROC,
         render=True,
         render_delay=0,
-        timestep_limit=1_000_000_000,
+        timestep_limit=100_000_000_000_000,
         exp_buffer_size=TS_PER_ITER * 3,
         ts_per_iteration=TS_PER_ITER,
         policy_layer_sizes=NETWORK_SHAPE,
@@ -130,13 +147,14 @@ if __name__ == "__main__":
         critic_lr=NET_LR,
         policy_lr=NET_LR,
         log_to_wandb=not DEBUG,
-        wandb_run_name="PPO-" + str(int(time()) % 1_000_000),
+        wandb_run_name="PPO-p1-" + str(int(time()) % 1_000_000),
+        wandb_project_name="ans_phase1",
         checkpoints_save_folder=CHECKPOINT_SAVE_FOLDER,
         save_every_ts=SAVE_EVERY_TS,
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
         checkpoint_load_folder=CHECKPOINT_LOAD_DIR,
-        load_wandb=not DEBUG,
+        load_wandb=not (DEBUG or NEWWANDB),
         #   min_inference_size=min_inference_size,
         #   standardize_returns=True,
         #   standardize_obs=False,
