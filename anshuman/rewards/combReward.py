@@ -5,7 +5,7 @@ from rlgym_sim.utils.reward_functions import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
 
 
-class MyCombinedReward(RewardFunction):
+class CSVCombinedReward(RewardFunction):
     """
     A reward composed of multiple rewards.
     """
@@ -28,10 +28,8 @@ class MyCombinedReward(RewardFunction):
         self.reward_functions = reward_functions
         self.reward_weights = reward_weights or np.ones_like(reward_functions)
 
-        self.out = open(out, "w")
-        self.out.write(
-            "EventReward,VelBalToGoal,VelBalToSelfGoal,LiuToGoal,LiuToSelfGoal,VeltoBal,FaceBall,inAir\n"
-        )
+        self.out = open(str(id(self)) + out, "w")
+        self.out.write(",".join([fn.__name__ for fn in self.reward_functions]))
         if len(self.reward_functions) != len(self.reward_weights):
             raise ValueError(
                 (

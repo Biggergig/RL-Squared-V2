@@ -47,7 +47,7 @@ def build_rocketsim_env():
     )
 
     reward_fn = CombinedReward.from_zipped(*rewards)
-    # reward_fn = MyCombinedReward.from_zipped(*rewards)
+    # reward_fn = CSVCombinedReward.from_zipped(*rewards)
 
     obs_builder = DefaultObs(
         pos_coef=np.asarray(
