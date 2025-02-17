@@ -70,13 +70,18 @@ def build_rocketsim_env():
 
 if __name__ == "__main__":
     from rlgym_ppo import Learner
+    from sys import argv
+
+    DEBUG = "debug" in argv
+    if DEBUG:
+        print("IN DEBUG MODE")
 
     metrics_logger = MyMetricLogger()
 
     # educated guess - could be slightly higher or lower
     # min_inference_size = max(1, int(round(n_proc * 0.9)))
 
-    N_PROC = 12
+    N_PROC = 64
     TS_PER_ITER = 50_000
     NETWORK_SHAPE = (2048, 2048, 1024, 1024)
     PPO_EPOCHS = 2
@@ -100,15 +105,15 @@ if __name__ == "__main__":
         ppo_ent_coef=PPO_ENT_COEF,
         critic_lr=NET_LR,
         policy_lr=NET_LR,
-        log_to_wandb=True,
+        log_to_wandb=not DEBUG,
         checkpoints_save_folder=None,
-        save_every_ts=150_000,
+        save_every_ts=150_000 if not DEBUG else 1_000_000_000_000,
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
         #   min_inference_size=min_inference_size,
         #   standardize_returns=True,
         #   standardize_obs=False,
-        checkpoint_load_folder="latest",
+        checkpoint_load_folder="latest" if not DEBUG else None,
         load_wandb=False,
     )
 
