@@ -14,6 +14,8 @@ from rlgym_sim.utils import common_values
 from rlgym_sim.utils.action_parsers import DiscreteAction
 from rlgym_sim.utils.state_setters import RandomState
 
+PHASE = 3
+
 
 def build_rocketsim_env():
     spawn_opponents = True
@@ -31,20 +33,21 @@ def build_rocketsim_env():
     rewards = (
         (
             EventReward(
-                goal=10, concede=-10, shot=3, save=3, boost_pickup=0.1, touch=0.25
+                goal=20, concede=-15, shot=10, save=10, boost_pickup=0.1, touch=3
             ),
             1,
         ),
-        (VelocityBallToGoalReward(), 5),
-        (VelocityBallToGoalReward(own_goal=True), -3),
-        (LiuDistanceBallToGoalReward(), 5),
-        (LiuDistanceBallToGoalReward(own_goal=True), -3),
-        (VelocityPlayerToBallReward(), 2),
+        (VelocityBallToGoalReward(), 15),
+        (VelocityBallToGoalReward(own_goal=True), -10),
+        (LiuDistanceBallToGoalReward(), 0.05),
+        (LiuDistanceBallToGoalReward(own_goal=True), -0.03),
+        (VelocityPlayerToBallReward(), 1),
         (FaceBallReward(), 0.5),
-        (InAirReward(), 0.15),
+        (InAirReward(), 0.05),
     )
 
     reward_fn = CombinedReward.from_zipped(*rewards)
+    # reward_fn = MyCombinedReward.from_zipped(*rewards)
 
     obs_builder = DefaultObs(
         pos_coef=np.asarray(
@@ -97,16 +100,16 @@ if __name__ == "__main__":
 
     N_PROC = 48
     min_inference_size = max(1, int(round(N_PROC * 0.9)))
-    TS_PER_ITER = 100_000
+    TS_PER_ITER = 150_000
     NETWORK_SHAPE = (2048, 2048, 1024, 1024)
     PPO_EPOCHS = 2
     PPO_MINIBATCH_SIZE = 50_000  # test for SPM
     PPO_ENT_COEF = 0.01
-    NET_LR = 2e-4
-    SAVE_EVERY_TS = 250_000
-    CHECKPOINT_SAVE_FOLDER = "data/checkpoints/p2/ppo"
+    NET_LR = 1e-4
+    SAVE_EVERY_TS = 500_000
+    CHECKPOINT_SAVE_FOLDER = f"data/checkpoints/p{PHASE}/ppo"
     CHECKPOINT_LOAD_DIR = None
-    for loadFrom in (2, 1, 0):
+    for loadFrom in range(PHASE, -1, -1):
         try:
             CHECKPOINT_LOAD_DIR = f"data/checkpoints/p{loadFrom}/" + str(
                 max(
@@ -117,7 +120,7 @@ if __name__ == "__main__":
             CHECKPOINT_LOAD_DIR += "/" + max(
                 os.listdir(CHECKPOINT_LOAD_DIR), key=lambda d: int(d.split("-")[-1])
             )
-            if loadFrom != 2:
+            if loadFrom != PHASE:
                 NEWWANDB = True
                 print("Setting new wandb since loading from prior phase")
             break
@@ -126,9 +129,10 @@ if __name__ == "__main__":
 
     if DEBUG:
         N_PROC = 1
-        SAVE_EVERY_TS = 1_000_000_000_000
+        TS_PER_ITER = 50_000
+        SAVE_EVERY_TS = 1_000_000
         CHECKPOINT_SAVE_FOLDER = "data/debug/checkpoints"
-        CHECKPOINT_LOAD_DIR = None
+        # CHECKPOINT_LOAD_DIR = None
 
     learner = Learner(
         build_rocketsim_env,
@@ -145,10 +149,10 @@ if __name__ == "__main__":
         ppo_minibatch_size=PPO_MINIBATCH_SIZE,
         ppo_ent_coef=PPO_ENT_COEF,
         critic_lr=NET_LR,
-        policy_lr=0,
+        policy_lr=NET_LR,
         log_to_wandb=not DEBUG,
-        wandb_run_name="PPO-p2-" + str(int(time()) % 1_000_000),
-        wandb_project_name="ans_phase2",
+        wandb_run_name=f"PPO-p{PHASE}-" + str(int(time()) % 1_000_000),
+        wandb_project_name=f"ans_phase{PHASE}",
         checkpoints_save_folder=CHECKPOINT_SAVE_FOLDER,
         save_every_ts=SAVE_EVERY_TS,
         n_checkpoints_to_keep=100_000,
