@@ -16,15 +16,26 @@ if __name__ == "__main__":
         exit(1)
 
     config["wandb_run_name_prefix"] += str(int(time())) + "-"
+    print("Run Name:", config["wandb_run_name_prefix"])
 
     sweep_config = {
-        "num_processes": [32, 48, 64],
+        "ppo_minibatch_size": [50_000],
+        "ts_per_iter": [100_000],
+        "timestep_limit": [150_000],
+        "num_processes": [40, 48],
         "network_shape": [(2048, 2048, 1024, 1024)],
     }
 
-    for key, value_list in sweep_config.items():
-        for v in value_list:
-            cfg = dict(config)
+    keys = list(sweep_config.keys())
+
+    def combos(cfg, pos=0):
+        if pos == len(keys):
+            yield dict(cfg)
+            return
+        key = keys[pos]
+        for v in sweep_config[key]:
             cfg[key] = v
-            print(cfg)
-            run(cfg)
+            yield from combos(cfg, pos + 1)
+
+    for cfg in combos(config):
+        run(cfg)

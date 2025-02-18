@@ -1,11 +1,6 @@
 phase: 0
 num_processes: 48
 ts_per_iter: 50000
-network_shape:
-  - 2048
-  - 2048
-  - 1024
-  - 1024
 ppo_epochs: 3
 ppo_minibatch_size: 50000
 ppo_ent_coef: 0.01
@@ -22,3 +17,8 @@ wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: v2_phase
 checkpoint_save_folder_prefix: data/checkpoints/p
 checkpoint_load_path: null
+network_shape:
+  - 2048
+  - 2048
+  - 1024
+  - 1024
