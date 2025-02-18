@@ -17,6 +17,7 @@ wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: v2_phase
 checkpoint_save_folder_prefix: data/checkpoints/p
 checkpoint_load_path: null
+log_rewards: true
 network_shape:
   - 2048
   - 2048

@@ -46,10 +46,13 @@ def build_rocketsim_env():
         )
     elif phase == 1:
         rewards = (
-            (EventReward(touch=0.5, shot=5, team_goal=20), 1),
+            (EventReward(touch=0.5), 1),
+            (EventReward(shot=5), 1),
+            (EventReward(goal=20), 1),
             (VelocityPlayerToBallReward(), 2),
-            (VelocityBallToGoalReward(), 4),
-            (FaceBallReward(), 0.1),
+            (VelocityBallToGoalReward(), 10),
+            (FaceBallReward(), 0.5),
+            (AlignBallGoal(), 0.3),
         )
     else:
         rewards = ((EventReward(boost_pickup=1), 1),)

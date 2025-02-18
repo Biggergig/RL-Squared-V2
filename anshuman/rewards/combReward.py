@@ -1,4 +1,5 @@
 from typing import Any, Optional, Tuple, overload, Union
+import os
 
 import numpy as np
 from rlgym_sim.utils.reward_functions import RewardFunction
@@ -15,7 +16,7 @@ class CombinedRewardLog(RewardFunction):
         self,
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
-        log_rate=100_000,
+        log_period=100,
     ):
         """
         Creates the combined reward using multiple rewards, and a potential set
@@ -38,8 +39,9 @@ class CombinedRewardLog(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
-        self.log_rate = log_rate
         self.wandb_run = load_run(reinit=False)
+        self.log_period = log_period
+        self.iter = 0
 
     @classmethod
     def from_zipped(
@@ -87,19 +89,22 @@ class CombinedRewardLog(RewardFunction):
             func.get_reward(player, state, previous_action)
             for func in self.reward_functions
         ]
-        # values = []
-        # for a, b in zip(rewards, self.reward_weights):
-        #     values.append(str(a * b))
-        # self.out.write(",".join(values) + "\n")
 
-        self.wandb_run.log(
-            {
-                "rewards/"
-                + (type(self.reward_functions[i]).__name__): rewards[i]
-                * self.reward_weights[i]
-                for i in range(len(self.reward_functions))
-            }
-        )
+        if os.environ.get("RLBOT_LOG_REWARDS", False):
+            if self.iter % self.log_period == 0:
+                log_dict = {
+                    f"rewards/{i+1}_"
+                    + (type(self.reward_functions[i]).__name__): rewards[i]
+                    * self.reward_weights[i]
+                    for i in range(len(self.reward_functions))
+                }
+                log_dict["rewards/0_TotalReward"] = float(
+                    np.dot(self.reward_weights, rewards)
+                )
+                self.wandb_run.log(log_dict)
+                self.iter = 0
+            self.iter += 1
+
         return float(np.dot(self.reward_weights, rewards))
 
     def get_final_reward(
