@@ -7,7 +7,7 @@ from rewards import *
 from build_environment import build_rocketsim_env
 
 
-def main(config):
+def run(config):
     from rlgym_ppo import Learner
 
     metrics_logger = MyMetricLogger()
@@ -72,4 +72,5 @@ if __name__ == "__main__":
     if config is None:
         print("Failed to load config", configName)
         exit(1)
-    main(config)
+
+    run(config)

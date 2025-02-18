@@ -20,5 +20,5 @@ log_to_wandb: true
 load_wandb: true
 wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: v2_phase
-checkpoint_save_folder: data/checkpoints/p
+checkpoint_save_folder_prefix: data/checkpoints/p
 checkpoint_load_path: null
