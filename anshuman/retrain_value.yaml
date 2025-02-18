@@ -4,8 +4,8 @@ ts_per_iter: 150000
 ppo_epochs: 3
 ppo_minibatch_size: 50000
 ppo_ent_coef: 0.01
-policy_net_lr: 1.0e-4
-critic_net_lr: 1.0e-4
+policy_net_lr: 0
+critic_net_lr: 3.0e-4
 save_every_ts: 1_000_000
 render: true
 render_delay: 0
@@ -13,10 +13,10 @@ timestep_limit: 1000000000
 exp_buffer_size_multiple: 3
 log_to_wandb: true
 load_wandb: false
-wandb_run_name_prefix: PPO-p
+wandb_run_name_prefix: PPO-revalue-p
 wandb_project_name_prefix: v2_phase
 checkpoint_save_folder_prefix: data/checkpoints/p
-checkpoint_load_path: data\checkpoints\p1\ppo-1739865796570242500
+checkpoint_load_path: data\checkpoints\p1\ppo-1739864323136979300
 log_rewards: true
 network_shape:
   - 2048

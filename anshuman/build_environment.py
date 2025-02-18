@@ -49,10 +49,13 @@ def build_rocketsim_env():
             (EventReward(touch=0.5), 1),
             (EventReward(shot=5), 1),
             (EventReward(goal=20), 1),
+            (EventReward(concede=-20), 1),
             (VelocityPlayerToBallReward(), 2),
             (VelocityBallToGoalReward(), 10),
-            (FaceBallReward(), 0.5),
+            (FaceBallReward(), 0.2),
             (AlignBallGoal(), 0.3),
+            (LiuDistanceBallToGoalReward(), 2),
+            (ConstantReward(), -3),
         )
     else:
         rewards = ((EventReward(boost_pickup=1), 1),)
