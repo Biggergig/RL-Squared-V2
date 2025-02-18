@@ -91,6 +91,7 @@ class CombinedRewardLog(RewardFunction):
         # for a, b in zip(rewards, self.reward_weights):
         #     values.append(str(a * b))
         # self.out.write(",".join(values) + "\n")
+
         self.wandb_run.log(
             {
                 "rewards/"
