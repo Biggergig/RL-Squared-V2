@@ -22,6 +22,7 @@ def build_rocketsim_env():
     tick_skip = 8
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
+
     phase = os.environ["RLBOT_PHASE"]
     try:
         phase = int(phase)
@@ -53,7 +54,7 @@ def build_rocketsim_env():
     else:
         rewards = ((EventReward(boost_pickup=1), 1),)
 
-    reward_fn = CombinedReward.from_zipped(*rewards)
+    reward_fn = CombinedRewardLog.from_zipped(*rewards)
 
     obs_builder = DefaultObs(
         pos_coef=np.asarray(

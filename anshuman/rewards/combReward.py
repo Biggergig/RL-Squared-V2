@@ -3,9 +3,10 @@ from typing import Any, Optional, Tuple, overload, Union
 import numpy as np
 from rlgym_sim.utils.reward_functions import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
+from wandb_util import load_run
 
 
-class CSVCombinedReward(RewardFunction):
+class CombinedRewardLog(RewardFunction):
     """
     A reward composed of multiple rewards.
     """
@@ -14,7 +15,7 @@ class CSVCombinedReward(RewardFunction):
         self,
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
-        out="rewards.csv",
+        log_rate=100_000,
     ):
         """
         Creates the combined reward using multiple rewards, and a potential set
@@ -28,8 +29,8 @@ class CSVCombinedReward(RewardFunction):
         self.reward_functions = reward_functions
         self.reward_weights = reward_weights or np.ones_like(reward_functions)
 
-        self.out = open(str(id(self)) + out, "w")
-        self.out.write(",".join([fn.__name__ for fn in self.reward_functions]))
+        # self.out = open(str(id(self)) + out, "w")
+        # self.out.write(",".join([fn.__name__ for fn in self.reward_functions]))
         if len(self.reward_functions) != len(self.reward_weights):
             raise ValueError(
                 (
@@ -37,12 +38,13 @@ class CSVCombinedReward(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
+        self.log_rate = log_rate
+        self.wandb_run = load_run(reinit=False)
 
     @classmethod
     def from_zipped(
         cls,
         *rewards_and_weights: Union[RewardFunction, Tuple[RewardFunction, float]],
-        out="rewards.csv"
     ) -> "CombinedReward":
         """
         Alternate constructor which takes any number of either rewards, or (reward, weight) tuples.
@@ -58,7 +60,7 @@ class CSVCombinedReward(RewardFunction):
                 r, w = value, 1.0
             rewards.append(r)
             weights.append(w)
-        return cls(tuple(rewards), tuple(weights), out=out)
+        return cls(tuple(rewards), tuple(weights))
 
     def reset(self, initial_state: GameState) -> None:
         """
@@ -85,11 +87,18 @@ class CSVCombinedReward(RewardFunction):
             func.get_reward(player, state, previous_action)
             for func in self.reward_functions
         ]
-        values = []
-        for a, b in zip(rewards, self.reward_weights):
-            values.append(str(a * b))
-        self.out.write(",".join(values) + "\n")
-
+        # values = []
+        # for a, b in zip(rewards, self.reward_weights):
+        #     values.append(str(a * b))
+        # self.out.write(",".join(values) + "\n")
+        self.wandb_run.log(
+            {
+                "rewards/"
+                + (type(self.reward_functions[i]).__name__): rewards[i]
+                * self.reward_weights[i]
+                for i in range(len(self.reward_functions))
+            }
+        )
         return float(np.dot(self.reward_weights, rewards))
 
     def get_final_reward(

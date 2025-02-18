@@ -5,6 +5,7 @@ from time import time
 from metricLogger import MyMetricLogger
 from rewards import *
 from build_environment import build_rocketsim_env
+from wandb_util import load_run
 
 
 def run(config):
@@ -27,6 +28,8 @@ def run(config):
     TS_PER_ITER = config["ts_per_iter"]
     NETWORK_SHAPE = config["network_shape"]
 
+    wandb_run = load_run(reinit=True, config=config)
+
     learner = Learner(
         build_rocketsim_env,
         n_proc=config["num_processes"],
@@ -44,8 +47,9 @@ def run(config):
         policy_lr=config["policy_net_lr"],
         critic_lr=config["critic_net_lr"],
         log_to_wandb=config["log_to_wandb"],
-        wandb_run_name=f"{config["wandb_run_name_prefix"]}{PHASE}{int(time()) % 1_000_000}",
-        wandb_project_name=f"{config["wandb_project_name_prefix"]}{PHASE}",
+        wandb_run=wandb_run,
+        # wandb_run_name=wandb_run_name,
+        # wandb_project_name=wandb_project_name,
         checkpoints_save_folder=config["checkpoint_save_folder_prefix"]
         + f"{PHASE}/ppo",
         save_every_ts=config["save_every_ts"],
@@ -72,6 +76,7 @@ if __name__ == "__main__":
     if config is None:
         print("Failed to load config", configName)
         exit(1)
+    config["RUN_ID"] = str(int(time()))
 
     print("Loading config into env variables...")
     for key, val in config.items():
