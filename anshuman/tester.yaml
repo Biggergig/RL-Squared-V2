@@ -1,0 +1,23 @@
+phase: sweep
+num_processes: 1
+ts_per_iter: 10000
+ppo_epochs: 1
+ppo_minibatch_size: 10000
+ppo_ent_coef: 0.01
+policy_net_lr: 2.0e-4
+critic_net_lr: 2.0e-4
+save_every_ts: 1_500_000
+render: false
+render_delay: 0
+timestep_limit: 30000
+exp_buffer_size_multiple: 1
+log_to_wandb: true
+load_wandb: false
+wandb_run_name_prefix: PPO-
+wandb_project_name_prefix: v2_
+checkpoint_save_folder_prefix: data/checkpoints/
+checkpoint_load_path: null
+network_shape:
+  - 64
+  - 64
+  - 64
