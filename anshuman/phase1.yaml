@@ -1,11 +1,11 @@
-phase: 0
+phase: 1
 num_processes: 48
-ts_per_iter: 100000
+ts_per_iter: 150000
 ppo_epochs: 3
 ppo_minibatch_size: 50000
 ppo_ent_coef: 0.01
-policy_net_lr: 2.0e-4
-critic_net_lr: 2.0e-4
+policy_net_lr: 1.0e-4
+critic_net_lr: 1.0e-4
 save_every_ts: 1_000_000
 render: true
 render_delay: 0
@@ -16,7 +16,7 @@ load_wandb: true
 wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: v2_phase
 checkpoint_save_folder_prefix: data/checkpoints/p
-checkpoint_load_path: data\checkpoints\p0\ppo-1739846672747635200
+checkpoint_load_path: data\checkpoints\p0\ppo-1739855088407839100
 network_shape:
   - 2048
   - 2048

@@ -22,6 +22,13 @@ def build_rocketsim_env():
     tick_skip = 8
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
+    phase = os.environ["RLBOT_PHASE"]
+    try:
+        phase = int(phase)
+    except ValueError:
+        print("Phase not set")
+        phase = -1
+    print("Environment phase:", phase)
 
     action_parser = DiscreteAction()
     terminal_conditions = [
@@ -29,12 +36,22 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    rewards = (
-        (EventReward(touch=1), 50),
-        (VelocityPlayerToBallReward(), 5),
-        (FaceBallReward(), 1),
-        (InAirReward(), 0.15),
-    )
+    if phase == 0:
+        rewards = (
+            (EventReward(touch=1, team_goal=20), 1),
+            (VelocityPlayerToBallReward(), 3),
+            (VelocityBallToGoalReward(), 3),
+            (FaceBallReward(), 0.1),
+        )
+    elif phase == 1:
+        rewards = (
+            (EventReward(touch=0.5, shot=5, team_goal=20), 1),
+            (VelocityPlayerToBallReward(), 2),
+            (VelocityBallToGoalReward(), 4),
+            (FaceBallReward(), 0.1),
+        )
+    else:
+        rewards = ((EventReward(boost_pickup=1), 1),)
 
     reward_fn = CombinedReward.from_zipped(*rewards)
 

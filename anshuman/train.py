@@ -73,4 +73,8 @@ if __name__ == "__main__":
         print("Failed to load config", configName)
         exit(1)
 
+    print("Loading config into env variables...")
+    for key, val in config.items():
+        os.environ[f"RLBOT_{key}"] = str(val)
+
     run(config)
