@@ -11,10 +11,14 @@ from wandb_util import load_run
 def run(config):
     from rlgym_ppo import Learner
 
+    config["RUN_ID"] = str(int(time()))
+    print("Loading config into env variables...")
+    for key, val in config.items():
+        os.environ[f"RLBOT_{key}"] = str(val)
+
     metrics_logger = MyMetricLogger()
 
     # educated guess - could be slightly higher or lower
-    # min_inference_size = max(1, int(round(n_proc * 0.9)))
 
     CHECKPOINT_LOAD_PATH = config["checkpoint_load_path"]
     if CHECKPOINT_LOAD_PATH is not None:
@@ -27,6 +31,7 @@ def run(config):
     PHASE = config["phase"]
     TS_PER_ITER = config["ts_per_iter"]
     NETWORK_SHAPE = config["network_shape"]
+    MIN_INFERENCE_SIZE = max(1, int(round(config["num_processes"] * 0.9)))
 
     wandb_run = load_run(reinit=True, config=config)
 
@@ -56,6 +61,7 @@ def run(config):
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
         checkpoint_load_folder=CHECKPOINT_LOAD_PATH,
+        min_inference_size=MIN_INFERENCE_SIZE,
         load_wandb=config["load_wandb"],
     )
 
@@ -76,10 +82,5 @@ if __name__ == "__main__":
     if config is None:
         print("Failed to load config", configName)
         exit(1)
-    config["RUN_ID"] = str(int(time()))
-
-    print("Loading config into env variables...")
-    for key, val in config.items():
-        os.environ[f"RLBOT_{key}"] = str(val)
 
     run(config)
