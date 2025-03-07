@@ -15,6 +15,11 @@ def load_run(reinit=False, config=None):
         group = "unnamed-runs" if wandb_group_name is None else wandb_group_name
         run_name = "rlgym-ppo-run" if wandb_run_name is None else wandb_run_name
         wandb_run = wandb.init(
-            project=project, group=group, config=config, name=run_name, reinit=reinit
+            entity="rl-squared",
+            project=project,
+            group=group,
+            config=config,
+            name=run_name,
+            reinit=reinit,
         )
     return wandb_run

@@ -119,6 +119,7 @@ class CombinedRewardLog(RewardFunction):
 
         :return: The combined rewards for the player on the state.
         """
+        # TODO: log final rewards in wandb
         rewards = [
             func.get_final_reward(player, state, previous_action)
             for func in self.reward_functions
