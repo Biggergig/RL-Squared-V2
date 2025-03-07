@@ -90,7 +90,7 @@ class CombinedRewardLog(RewardFunction):
             for func in self.reward_functions
         ]
 
-        if os.environ.get("RLBOT_LOG_REWARDS", False):
+        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False":
             if self.iter % self.log_period == 0:
                 log_dict = {
                     f"rewards/{i+1}_"
