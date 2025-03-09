@@ -11,7 +11,7 @@ render: false
 render_delay: 0
 timestep_limit: 1000
 exp_buffer_size_multiple: 3
-log_to_wandb: true
+log_to_wandb: false
 load_wandb: false
 wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: v2_debug

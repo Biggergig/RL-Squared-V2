@@ -16,7 +16,7 @@ class CombinedRewardLog(RewardFunction):
         self,
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
-        log_period=100,
+        log_period=1000,
     ):
         """
         Creates the combined reward using multiple rewards, and a potential set
@@ -39,7 +39,10 @@ class CombinedRewardLog(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
-        self.wandb_run = load_run(reinit=False)
+        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False":
+            self.wandb_run = load_run(reinit=False)
+        else:
+            self.wandb_run = None
         self.log_period = log_period
         self.iter = 0
 
@@ -90,7 +93,7 @@ class CombinedRewardLog(RewardFunction):
             for func in self.reward_functions
         ]
 
-        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False":
+        if self.wandb_run is not None:
             if self.iter % self.log_period == 0:
                 log_dict = {
                     f"rewards/{i+1}_"
@@ -119,10 +122,21 @@ class CombinedRewardLog(RewardFunction):
 
         :return: The combined rewards for the player on the state.
         """
-        # TODO: log final rewards in wandb
         rewards = [
             func.get_final_reward(player, state, previous_action)
             for func in self.reward_functions
         ]
+
+        if self.wandb_run is not None:
+            log_dict = {
+                f"rewards/{i+1}_"
+                + (type(self.reward_functions[i]).__name__): rewards[i]
+                * self.reward_weights[i]
+                for i in range(len(self.reward_functions))
+            }
+            log_dict["rewards/0_TotalReward"] = float(
+                np.dot(self.reward_weights, rewards)
+            )
+            self.wandb_run.log(log_dict)
 
         return float(np.dot(self.reward_weights, rewards))

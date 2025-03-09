@@ -37,28 +37,43 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    if phase == 0:
-        rewards = (
-            (EventReward(touch=1, team_goal=20), 1),
-            (VelocityPlayerToBallReward(), 3),
-            (VelocityBallToGoalReward(), 3),
-            (FaceBallReward(), 0.1),
-        )
-    elif phase == 1:
-        rewards = (
-            (EventReward(touch=0.5), 1),
-            (EventReward(shot=5), 1),
-            (EventReward(goal=20), 1),
-            (EventReward(concede=-20), 1),
-            (VelocityPlayerToBallReward(), 2),
-            (VelocityBallToGoalReward(), 10),
-            (FaceBallReward(), 0.2),
-            (AlignBallGoal(), 0.3),
-            (LiuDistanceBallToGoalReward(), 2),
-            (ConstantReward(), -3),
-        )
+    # print("PREFIX:", os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"])
+    if os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "align_phase":
+        if phase == 1:
+            rewards = (
+                (EventReward(touch=0.5), 1),
+                (EventReward(shot=5), 1),
+                (EventReward(team_goal=20), 1),
+                (EventReward(concede=-20), 1),
+                (VelocityPlayerToBallReward(), 2),
+                (VelocityBallToGoalReward(), 3),
+                (FaceBallReward(), 0.3),
+                (AlignBallGoal(), 1),
+                (SaveBoostReward(), 1),
+            )
     else:
-        rewards = ((EventReward(boost_pickup=1), 1),)
+        if phase == 0:
+            rewards = (
+                (EventReward(touch=1, team_goal=20), 1),
+                (VelocityPlayerToBallReward(), 3),
+                (VelocityBallToGoalReward(), 3),
+                (FaceBallReward(), 0.1),
+            )
+        elif phase == 1:
+            rewards = (
+                (EventReward(touch=0.5), 1),
+                (EventReward(shot=5), 1),
+                (EventReward(goal=20), 1),
+                (EventReward(concede=-20), 1),
+                (VelocityPlayerToBallReward(), 2),
+                (VelocityBallToGoalReward(), 10),
+                (FaceBallReward(), 0.2),
+                (AlignBallGoal(), 0.3),
+                (LiuDistanceBallToGoalReward(), 2),
+                (ConstantReward(), -3),
+            )
+        else:
+            rewards = ((EventReward(boost_pickup=1), 1),)
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 
