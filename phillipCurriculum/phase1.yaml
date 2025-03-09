@@ -1,5 +1,5 @@
 phase: 1
-num_processes: 64
+num_processes: 1
 ts_per_iter: 200000
 ppo_epochs: 3
 ppo_minibatch_size: 50000
@@ -11,12 +11,12 @@ render: true
 render_delay: 0
 timestep_limit: 1000000000
 exp_buffer_size_multiple: 2
-log_to_wandb: true
+log_to_wandb: false
 load_wandb: false
 wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: phillip_curriculum
 checkpoint_save_folder_prefix: data/checkpoints/p
-checkpoint_load_path: data\checkpoints\p1\ppo-1741111518386288800
+checkpoint_load_path: data\checkpoints\p0\ppo-1741505639392543200
 log_rewards: false
 network_shape:
   - 2048

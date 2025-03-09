@@ -55,7 +55,6 @@ def build_rocketsim_env():
             (EventReward(goal=20), 1),
             (EventReward(concede=-20), 1),
             (VelocityBallToGoalReward(), 5),
-            (InAirReward(), 0.15)
             (ConstantReward(), -3),
         )
     else:
