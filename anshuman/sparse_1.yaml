@@ -14,9 +14,9 @@ exp_buffer_size_multiple: 3
 log_to_wandb: true
 load_wandb: false
 wandb_run_name_prefix: PPO-p
-wandb_project_name_prefix: align_phase
-checkpoint_save_folder_prefix: data/checkpoints/align_p
-checkpoint_load_path: data\checkpoints\align_p1\ppo-1741567748143020900
+wandb_project_name_prefix: sparse_phase
+checkpoint_save_folder_prefix: data/checkpoints/sparse_p
+checkpoint_load_path: null
 log_rewards: true
 network_shape:
   - 1024
