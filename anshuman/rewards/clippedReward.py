@@ -21,13 +21,10 @@ class ClippedReward(RewardFunction):  # We extend the class "RewardFunction"
         self.fn.reset(initial_state)
 
     # Get the reward for a specific player, at the current state
-    def get_reward(
-        self, player: PlayerData, state: GameState, previous_action
-    ) -> float:
-        rew = self.fn.get_reward(player, state, previous_action)
-        return max(lb, min(ub, rew))
+    def get_reward(self, *args, **kwargs) -> float:
+        rew = self.fn.get_reward(*args, **kwargs)
+        return max(self.lb, min(self.ub, rew))
 
-    # Get the reward for a specific player, at the current state
     def get_final_reward(self, *args, **kwargs) -> float:
         rew = self.fn.get_final_reward(*args, **kwargs)
-        return max(lb, min(ub, rew))
+        return max(self.lb, min(self.ub, rew))
