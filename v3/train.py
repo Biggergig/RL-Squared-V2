@@ -14,6 +14,7 @@ def run(
     no_render: bool = False,
     dry: bool = False,
     new: bool = False,
+    load_delay: float = None,
 ):
     import time
     from rlgym_ppo import Learner
@@ -49,6 +50,8 @@ def run(
         config_dict["log_to_wandb"] = False
     if new:
         config_dict["checkpoint_load_folder"] = None
+    if load_delay is not None:
+        config_dict["instance_launch_delay"] = load_delay
 
     config_dict["exp_buffer_size"] = (
         int(config_dict["_exp_buffer_size_multiple"]) * config_dict["ts_per_iteration"]

@@ -14,11 +14,7 @@ def model_selector(model_name, phase):
                 (EventReward(team_goal=15), 1, "goal"),
                 (EventReward(concede=-10), 1, "enemy_goal"),
                 (VelocityPlayerToBallReward(), 1),
-                (
-                    VelocityBallToGoalReward(use_scalar_projection=True),
-                    1 / 5,
-                    "scalar_vel_ball_to_goal",
-                ),
+                (VelocityBallToGoalReward(), 5),
                 (FaceBallReward(), 0.05),
                 (AlignBallGoal(), 0.1),
                 (SaveBoostReward(), 0.1),
