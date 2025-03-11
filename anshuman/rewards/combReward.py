@@ -40,7 +40,7 @@ class CombinedRewardLog(RewardFunction):
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
         if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False":
-            self.wandb_run = load_run(reinit=False)
+            self.wandb_run = load_run(reinit=False, reward_fn=True)
         else:
             self.wandb_run = None
         self.log_period = log_period
