@@ -22,7 +22,7 @@ class CombinedRewardLog(RewardFunction):
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
         names:Tuple[str|None]|None = None,
-        log_period=1000,
+        log_period=100,
     ):
         """
         Creates the combined reward using multiple rewards, and a potential set
@@ -112,7 +112,7 @@ class CombinedRewardLog(RewardFunction):
             for func in self.reward_functions
         ]
 
-        if self.wandb_run is not None:
+        if self.wandb_run is not None and player.team_num == 0:
             if self.cleaned_up == False:
                 with contextlib.suppress(FileNotFoundError):
                     os.remove(".rew_set_global.tmp")
@@ -158,7 +158,7 @@ class CombinedRewardLog(RewardFunction):
             for func in self.reward_functions
         ]
 
-        if self.wandb_run is not None:
+        if self.wandb_run is not None and player.team_num == 0:
             log_dict = {
                 f"rewards/{i+1}_"
                 + (self.names[i] or type(self.reward_functions[i]).__name__)+f"_{self.reward_weights[i]}": rewards[i]
