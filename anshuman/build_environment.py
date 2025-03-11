@@ -37,9 +37,11 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
+    rewards = ((VelocityReward(),1),)
     # print("PREFIX:", os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"])
     if os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "align_phase":
         if phase == 1:
+            # print("ALIGN_PHASE1")
             rewards = (
                 (EventReward(touch=0.5), 1),
                 (EventReward(shot=5), 1),
@@ -51,8 +53,22 @@ def build_rocketsim_env():
                 (AlignBallGoal(), 1),
                 (SaveBoostReward(), 1),
             )
-    if os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "sparse_phase":
+    elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "gentle_phase":
         if phase == 1:
+            # print("GENTLE_PHASE1")
+            rewards = (
+                (EventReward(touch=1), 1, "touch"),
+                (EventReward(team_goal=10), 1, "goal"),
+                (EventReward(concede=-10), 1, "enemy_goal"),
+                (VelocityPlayerToBallReward(), 1),
+                (VelocityBallToGoalReward(), 3),
+                (FaceBallReward(), 0.05),
+                (AlignBallGoal(), .1),
+                (SaveBoostReward(), .1),
+            )
+    elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "sparse_phase":
+        if phase == 1:
+            # print("SPARSE_PHASE1")
             rewards = (
                 (EventReward(touch=3), 1),
                 (EventReward(team_goal=40), 1),
@@ -76,6 +92,7 @@ def build_rocketsim_env():
                 (ConstantReward(), -2),
             )
     else:
+        # print("DEFAULT REWARDS")
         if phase == 0:
             rewards = (
                 (EventReward(touch=1, team_goal=20), 1),
@@ -96,8 +113,7 @@ def build_rocketsim_env():
                 (LiuDistanceBallToGoalReward(), 2, "dist_ball_to_goal"),
                 (ConstantReward(), -3, "neg_const"),
             )
-        else:
-            rewards = ((EventReward(boost_pickup=1), 1),)
+
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

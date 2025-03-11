@@ -54,6 +54,7 @@ class CombinedRewardLog(RewardFunction):
             self.wandb_run = load_run(reinit=False, reward_fn=True)
         else:
             self.wandb_run = None
+        self.agg_rewards = []
         self.log_period = log_period
         self.iter = 0
 
@@ -111,15 +112,23 @@ class CombinedRewardLog(RewardFunction):
         ]
 
         if self.wandb_run is not None:
-
             if self.cleaned_up == False:
                 with contextlib.suppress(FileNotFoundError):
                     os.remove(".rew_set_global.tmp")
                 self.cleaned_up = True
+            self.agg_rewards.append(rewards)
             if self.iter % self.log_period == 0:
+                mean_rew = [0]*len(rewards)
+                for row in self.agg_rewards:
+                    for i in range(len(row)):
+                        mean_rew[i]+=row[i]
+                for i in range(len(mean_rew)):
+                    mean_rew[i]/=len(self.agg_rewards)
+                self.agg_rewards.clear()
+                
                 log_dict = {
                     f"rewards/{i+1}_"
-                    + (self.names[i] or type(self.reward_functions[i]).__name__): rewards[i]
+                    + (self.names[i] or type(self.reward_functions[i]).__name__)+f"_{self.reward_weights[i]}": mean_rew[i]
                     * self.reward_weights[i]
                     for i in range(len(self.reward_functions))
                 }
@@ -152,7 +161,7 @@ class CombinedRewardLog(RewardFunction):
         if self.wandb_run is not None:
             log_dict = {
                 f"rewards/{i+1}_"
-                + (self.names[i] or type(self.reward_functions[i]).__name__): rewards[i]
+                + (self.names[i] or type(self.reward_functions[i]).__name__)+f"_{self.reward_weights[i]}": rewards[i]
                 * self.reward_weights[i]
                 for i in range(len(self.reward_functions))
             }
