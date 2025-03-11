@@ -42,7 +42,7 @@ def run(config):
                 max(os.listdir(CHECKPOINT_LOAD_PATH), key=lambda x: int(x)),
             )
             print("Loading from latest checkpoint", CHECKPOINT_LOAD_PATH)
-    except ValueError:
+    except FileNotFoundError:
         print("Didn't find file, starting fresh")
         CHECKPOINT_LOAD_PATH = None
 
@@ -74,7 +74,7 @@ def run(config):
         # wandb_run_name=wandb_run_name,
         # wandb_project_name=wandb_project_name,
         checkpoints_save_folder=config["checkpoint_save_folder_prefix"]
-        + f"{PHASE}/ppo",
+        + f"{PHASE}/ppo" ,
         save_every_ts=config["save_every_ts"],
         n_checkpoints_to_keep=100_000,
         metrics_logger=metrics_logger,
