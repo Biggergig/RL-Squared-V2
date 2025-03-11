@@ -1,0 +1,7 @@
+data/
+wandb/
+__pycache__
+rewards.csv
+*.tmp
+.venv
+settings.txt
