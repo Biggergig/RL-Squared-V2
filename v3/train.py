@@ -1,19 +1,37 @@
 import os
 import arguably
 import yaml
-from rlgym_ppo import Learner
 from utils import *
-import time
-import contextlib
-import warnings
-
-warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 @arguably.command
-def run(config: str = "default.yaml"):
+def run(
+    config: str = "default.yaml",
+    *,
+    nproc: int = None,
+    checkpoint: str = None,
+    log_rewards: bool = None,
+    no_render: bool = False,
+):
+    import time
+    from rlgym_ppo import Learner
+    import contextlib
+    import warnings
+
+    warnings.simplefilter(action="ignore", category=FutureWarning)
     with open(config, "r") as f:
         config_dict = yaml.safe_load(f)
+
+    # load cmd line args
+    if nproc is not None:
+        config_dict["n_proc"] = nproc
+    if checkpoint is not None:
+        config_dict["checkpoint_load_folder"] = checkpoint
+    if log_rewards is not None:
+        config_dict["_log_rewards"] = log_rewards
+    if no_render:
+        config_dict["render"] = False
+
     config_dict["exp_buffer_size"] = (
         int(config_dict["_exp_buffer_size_multiple"]) * config_dict["ts_per_iteration"]
     )
@@ -29,8 +47,6 @@ def run(config: str = "default.yaml"):
     )
 
     inp_cfg = {k: v for k, v in config_dict.items() if not k.startswith("_")}
-    # print(config_dict)
-    # print(inp_cfg)
 
     os.environ["RLBOT_NAME"] = config_dict["_name"]
     os.environ["RLBOT_PHASE"] = str(config_dict["_phase"])
