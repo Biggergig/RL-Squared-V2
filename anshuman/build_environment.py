@@ -29,7 +29,7 @@ def build_rocketsim_env():
     except ValueError:
         print("Phase not set")
         phase = -1
-    print("Environment phase:", phase)
+    # print("Environment phase:", phase)
 
     action_parser = DiscreteAction()
     terminal_conditions = [
@@ -85,16 +85,16 @@ def build_rocketsim_env():
             )
         elif phase == 1:
             rewards = (
-                (EventReward(touch=0.5), 1),
-                (EventReward(shot=5), 1),
-                (EventReward(goal=20), 1),
-                (EventReward(concede=-20), 1),
-                (VelocityPlayerToBallReward(), 2),
-                (VelocityBallToGoalReward(), 10),
-                (FaceBallReward(), 0.2),
-                (AlignBallGoal(), 0.3),
-                (LiuDistanceBallToGoalReward(), 2),
-                (ConstantReward(), -3),
+                (EventReward(touch=0.5), 1, "touch"),
+                (EventReward(shot=5), 1, "shot"),
+                (EventReward(goal=20), 1, "goal"),
+                (EventReward(concede=-20), 1, "enemy_goal"),
+                (VelocityPlayerToBallReward(), 2, "vel_player_to_ball"),
+                (VelocityBallToGoalReward(), 10, "vel_ball_to_goal"),
+                (FaceBallReward(), 0.2, "face_ball"),
+                (AlignBallGoal(), 0.3, "align_ball"),
+                (LiuDistanceBallToGoalReward(), 2, "dist_ball_to_goal"),
+                (ConstantReward(), -3, "neg_const"),
             )
         else:
             rewards = ((EventReward(boost_pickup=1), 1),)

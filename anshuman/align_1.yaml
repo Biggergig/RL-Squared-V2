@@ -16,7 +16,7 @@ load_wandb: false
 wandb_run_name_prefix: PPO-p
 wandb_project_name_prefix: align_phase
 checkpoint_save_folder_prefix: data/checkpoints/align_p
-checkpoint_load_path: data\checkpoints\align_p1\ppo-1741637838880708700        
+checkpoint_load_path: data\checkpoints\align_p1\latest
 log_rewards: true
 network_shape:
   - 1024

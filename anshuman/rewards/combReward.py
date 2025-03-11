@@ -1,4 +1,4 @@
-from typing import Any, Optional, Tuple, overload, Union
+from typing import Any, Optional, Tuple, overload, Union, List
 import os
 
 from pathlib import Path
@@ -21,6 +21,7 @@ class CombinedRewardLog(RewardFunction):
         self,
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
+        names:Tuple[str|None]|None = None,
         log_period=1000,
     ):
         """
@@ -34,6 +35,7 @@ class CombinedRewardLog(RewardFunction):
 
         self.reward_functions = reward_functions
         self.reward_weights = reward_weights or np.ones_like(reward_functions)
+        self.names = names
 
         # self.out = open(str(id(self)) + out, "w")
         # self.out.write(",".join([fn.__name__ for fn in self.reward_functions]))
@@ -59,7 +61,7 @@ class CombinedRewardLog(RewardFunction):
     def from_zipped(
         cls,
         *rewards_and_weights: Union[RewardFunction, Tuple[RewardFunction, float]],
-    ) -> "CombinedReward":
+    ) -> "CombinedRewardLog":
         """
         Alternate constructor which takes any number of either rewards, or (reward, weight) tuples.
 
@@ -67,14 +69,20 @@ class CombinedRewardLog(RewardFunction):
         """
         rewards = []
         weights = []
+        names = []
         for value in rewards_and_weights:
             if isinstance(value, tuple):
-                r, w = value
+                if len(value) == 2:
+                    r, w = value
+                    name = None
+                else:
+                    r,w,name = value
             else:
-                r, w = value, 1.0
+                r, w, name = value, 1.0, None
             rewards.append(r)
             weights.append(w)
-        return cls(tuple(rewards), tuple(weights))
+            names.append(name)
+        return cls(tuple(rewards), tuple(weights), tuple(names))
 
     def reset(self, initial_state: GameState) -> None:
         """
@@ -111,7 +119,7 @@ class CombinedRewardLog(RewardFunction):
             if self.iter % self.log_period == 0:
                 log_dict = {
                     f"rewards/{i+1}_"
-                    + (type(self.reward_functions[i]).__name__): rewards[i]
+                    + (self.names[i] or type(self.reward_functions[i]).__name__): rewards[i]
                     * self.reward_weights[i]
                     for i in range(len(self.reward_functions))
                 }

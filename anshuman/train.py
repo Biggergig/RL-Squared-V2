@@ -24,8 +24,16 @@ def run(config):
 
     # educated guess - could be slightly higher or lower
 
-    CHECKPOINT_LOAD_PATH = config["checkpoint_load_path"]
+    CHECKPOINT_LOAD_PATH = config["checkpoint_load_path"].replace("/","\\")
     if CHECKPOINT_LOAD_PATH is not None:
+        if CHECKPOINT_LOAD_PATH.endswith("latest"):
+            CHECKPOINT_LOAD_PATH = "\\".join(CHECKPOINT_LOAD_PATH.split('\\')[:-1])
+            CHECKPOINT_LOAD_PATH = os.path.join(
+                CHECKPOINT_LOAD_PATH,
+                max(os.listdir(CHECKPOINT_LOAD_PATH), key=lambda x: int(x.split("-")[-1])),
+            )
+            print("LOADED LATEST DIR:", CHECKPOINT_LOAD_PATH)
+
         CHECKPOINT_LOAD_PATH = os.path.join(
             CHECKPOINT_LOAD_PATH,
             max(os.listdir(CHECKPOINT_LOAD_PATH), key=lambda x: int(x.split("-")[-1])),
