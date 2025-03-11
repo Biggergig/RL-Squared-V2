@@ -152,7 +152,7 @@ class CombinedRewardLog(RewardFunction):
         if self.wandb_run is not None:
             log_dict = {
                 f"rewards/{i+1}_"
-                + (type(self.reward_functions[i]).__name__): rewards[i]
+                + (self.names[i] or type(self.reward_functions[i]).__name__): rewards[i]
                 * self.reward_weights[i]
                 for i in range(len(self.reward_functions))
             }
