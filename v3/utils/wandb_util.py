@@ -19,6 +19,7 @@ def load_run(config=None, reward_fn=False) -> Run | None:
             group=group_name,
             config=config,
             name=run_name,
+            reinit=False,
         )
         return wandb_run
     return None

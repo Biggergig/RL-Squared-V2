@@ -37,7 +37,7 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    rewards = ((VelocityReward(),1),"DEFAULT_SPEED_REWARD")
+    rewards = ((VelocityReward(negative=True), 1, "NEG_VEL_REWARD"),)
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

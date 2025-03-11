@@ -21,7 +21,7 @@ class CombinedRewardLog(RewardFunction):
         self,
         reward_functions: Tuple[RewardFunction, ...],
         reward_weights: Optional[Tuple[float, ...]] = None,
-        names:Tuple[str|None]|None = None,
+        names: Tuple[str | None] | None = None,
         log_period=100,
     ):
         """
@@ -46,10 +46,12 @@ class CombinedRewardLog(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
-        sleep(random.random()*5) # just to avoid race
+        sleep(random.random() * 5)  # just to avoid race
         self.cleaned_up = True
-        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False" and not os.path.exists(".rew_set_global.tmp"):
-            Path('.rew_set_global.tmp').touch()
+        if os.environ.get(
+            "RLBOT_LOG_REWARDS", "False"
+        ) != "False" and not os.path.exists(".rew_set_global.tmp"):
+            Path(".rew_set_global.tmp").touch()
             self.cleaned_up = False
             self.wandb_run = load_run(reward_fn=True)
         else:
@@ -57,7 +59,6 @@ class CombinedRewardLog(RewardFunction):
         self.agg_rewards = []
         self.log_period = log_period
         self.iter = 0
-        print(self.reward_functions)
 
     @classmethod
     def from_zipped(
@@ -78,7 +79,7 @@ class CombinedRewardLog(RewardFunction):
                     r, w = value
                     name = None
                 else:
-                    r,w,name = value
+                    r, w, name = value
             else:
                 r, w, name = value, 1.0, None
             rewards.append(r)
@@ -120,18 +121,18 @@ class CombinedRewardLog(RewardFunction):
                 self.cleaned_up = True
             self.agg_rewards.append(rewards)
             if len(self.agg_rewards) >= self.log_period:
-                mean_rew = [0]*len(rewards)
+                mean_rew = [0] * len(rewards)
                 for row in self.agg_rewards:
                     for i in range(len(row)):
-                        mean_rew[i]+=row[i]
+                        mean_rew[i] += row[i]
                 for i in range(len(mean_rew)):
-                    mean_rew[i]/=len(self.agg_rewards)
+                    mean_rew[i] /= len(self.agg_rewards)
                 self.agg_rewards.clear()
-                
+
                 log_dict = {
                     f"rewards/{i+1}_"
-                    + (self.names[i] or type(self.reward_functions[i]).__name__)+f"_{self.reward_weights[i]}": mean_rew[i]
-                    * self.reward_weights[i]
+                    + (self.names[i] or type(self.reward_functions[i]).__name__)
+                    + f"_{self.reward_weights[i]}": mean_rew[i] * self.reward_weights[i]
                     for i in range(len(self.reward_functions))
                 }
                 log_dict["rewards/0_TotalReward"] = float(
@@ -162,8 +163,8 @@ class CombinedRewardLog(RewardFunction):
         if self.wandb_run is not None and player.team_num == 0:
             log_dict = {
                 f"rewards/{i+1}_"
-                + (self.names[i] or type(self.reward_functions[i]).__name__)+f"_{self.reward_weights[i]}": rewards[i]
-                * self.reward_weights[i]
+                + (self.names[i] or type(self.reward_functions[i]).__name__)
+                + f"_{self.reward_weights[i]}": rewards[i] * self.reward_weights[i]
                 for i in range(len(self.reward_functions))
             }
             log_dict["rewards/0_TotalReward"] = float(

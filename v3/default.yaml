@@ -18,6 +18,8 @@ gae_gamma: 0.99
 
 # Logging
 log_to_wandb: true
+load_wandb: false
+_log_rewards: true
 
 # Checkpointing
 checkpoint_load_folder: latest
@@ -31,10 +33,11 @@ n_proc: 4
 ppo_minibatch_size: 25_000
 
 # Rendering
-render: false
+render: true
 render_delay: 0
 
 # Constants
-timestep_limit: 1.e15
+timestep_limit: 1_000_000_000_000
 standardize_returns: false
 standardize_obs: false
+add_unix_timestamp: false

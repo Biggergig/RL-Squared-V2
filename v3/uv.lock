@@ -544,6 +544,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rlviser-py"
+version = "0.6.9"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/58/2fb82c73b60f0617d2aef17b910c51ed77b75a141bd0e40a9cd250060626/rlviser_py-0.6.9.tar.gz", hash = "sha256:7679198d2181afef95d1a3c945ecf1fa489f05fe3d3ff1d2ec22f494724501ea", size = 13554 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/bc/f4a7cb1667513183d8410b337fb72b1246ebf9fa1dc06d5be889aa7869bb/rlviser_py-0.6.9-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:d38d340c80e5a3057a6cc2b09743350d5554ea1f48ecdd6aa604ad47be0c2e53", size = 201157 },
+    { url = "https://files.pythonhosted.org/packages/d7/7b/25ea113113f408a084a1e27192a062d3761fb359430e4741277f336ff0e1/rlviser_py-0.6.9-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:40327ec20548349ffbc31e904ea67b38b2355e2b92fcd487baff2c2d7776d5db", size = 225058 },
+    { url = "https://files.pythonhosted.org/packages/04/5e/d5b2d0fbc3c21236c46f0aac8d33dde8c7268f9e763b7a0580712a2492e5/rlviser_py-0.6.9-cp37-abi3-win_amd64.whl", hash = "sha256:5204ab11e6c7f58e7dd48ee3528d2afbf773507e11aaa77cb24c4ce9f5e9ce61", size = 153387 },
+]
+
+[[package]]
 name = "rocketsim"
 version = "2.1.1.post1"
 source = { registry = "https://pypi.org/simple" }
@@ -722,6 +733,7 @@ dependencies = [
     { name = "arguably" },
     { name = "rlgym-ppo" },
     { name = "rlgym-sim" },
+    { name = "rlviser-py" },
     { name = "rocketsim" },
     { name = "tqdm" },
 ]
@@ -731,6 +743,7 @@ requires-dist = [
     { name = "arguably", specifier = ">=1.3.0" },
     { name = "rlgym-ppo", git = "https://github.com/AechPro/rlgym-ppo" },
     { name = "rlgym-sim", git = "https://github.com/AechPro/rocket-league-gym-sim?rev=main" },
+    { name = "rlviser-py", specifier = ">=0.6.9" },
     { name = "rocketsim", specifier = ">=2.1.1.post1" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
