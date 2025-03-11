@@ -1,11 +1,12 @@
 import os
 import wandb
-import time
+
+from wandb.sdk.wandb_run import Run
 
 
-def load_run(config=None, reward_fn=False) -> wandb.Run | None:
+def load_run(config=None, reward_fn=False) -> Run | None:
     NAME = os.environ["RLBOT_NAME"]
-    PHASE = os.environ["RLBOT_PHASE"]
+    PHASE = int(os.environ["RLBOT_PHASE"])
 
     run_name = "Rewards" if reward_fn else "PPO"
     project_name = f"{NAME}_phase{PHASE}"

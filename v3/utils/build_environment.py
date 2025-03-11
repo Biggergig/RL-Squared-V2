@@ -23,7 +23,7 @@ def build_rocketsim_env():
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
-    phase = os.environ["RLBOT_PHASE"]
+    phase = int(os.environ["RLBOT_PHASE"])
     try:
         phase = int(phase)
     except ValueError:
@@ -37,110 +37,7 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    rewards = ((VelocityReward(),1),)
-    # print("PREFIX:", os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"])
-    if os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "align_phase":
-        if phase == 1:
-            # print("ALIGN_PHASE1")
-            rewards = (
-                (EventReward(touch=0.5), 1),
-                (EventReward(shot=5), 1),
-                (EventReward(team_goal=20), 1),
-                (EventReward(concede=-20), 1),
-                (VelocityPlayerToBallReward(), 2),
-                (VelocityBallToGoalReward(), 3),
-                (FaceBallReward(), 0.3),
-                (AlignBallGoal(), 1),
-                (SaveBoostReward(), 1),
-            )
-    elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "gentle_phase":
-        if phase == 1:
-            # print("GENTLE_PHASE1")
-            rewards = (
-                (EventReward(touch=1), 1, "touch"),
-                (EventReward(team_goal=10), 1, "goal"),
-                (EventReward(concede=-10), 1, "enemy_goal"),
-                (VelocityPlayerToBallReward(), 1),
-                (VelocityBallToGoalReward(), 3),
-                (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
-            )
-    elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "grounded_phase":
-        if phase == 1:
-            # print("GENTLE_PHASE1")
-            rewards = (
-                (EventReward(touch=1), 1, "touch"),
-                (EventReward(team_goal=10), 1, "goal"),
-                (EventReward(concede=-10), 1, "enemy_goal"),
-                (VelocityPlayerToBallReward(), 1),
-                (VelocityBallToGoalReward(), 3),
-                (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
-                (InAirReward(), -.75, "air_penalty"),
-             # print("GENTLE_PHASE1")
-            )
-        elif phase == 2:
-            rewards = (
-                (EventReward(touch=.5), 1, "touch"),
-                (EventReward(team_goal=15), 1, "goal"),
-                (EventReward(concede=-15), 1, "enemy_goal"),
-                # (VelocityPlayerToBallReward(), 1),
-                (VelocityBallToGoalReward(), 5),
-                # (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
-                # (InAirReward(), -.75, "air_penalty"),
-            )
-    elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "sparse_phase":
-        if phase == 1:
-            # print("SPARSE_PHASE1")
-            rewards = (
-                (EventReward(touch=3), 1),
-                (EventReward(team_goal=40), 1),
-                (EventReward(concede=-40), 1),
-                (
-                    ClippedReward(
-                        VelocityPlayerToBallReward(),
-                        lb=0,
-                        ub=1,
-                    ),
-                    1,
-                ),
-                (
-                    ClippedReward(
-                        VelocityBallToGoalReward(),
-                        lb=-5,
-                        ub=5,
-                    ),
-                    1 / 5,
-                ),
-                (ConstantReward(), -2),
-            )
-    else:
-        # print("DEFAULT REWARDS")
-        if phase == 0:
-            rewards = (
-                (EventReward(touch=1, team_goal=20), 1),
-                (VelocityPlayerToBallReward(), 3),
-                (VelocityBallToGoalReward(), 3),
-                (FaceBallReward(), 0.1),
-            )
-        elif phase == 1:
-            rewards = (
-                (EventReward(touch=0.5), 1, "touch"),
-                (EventReward(shot=5), 1, "shot"),
-                (EventReward(goal=20), 1, "goal"),
-                (EventReward(concede=-20), 1, "enemy_goal"),
-                (VelocityPlayerToBallReward(), 2, "vel_player_to_ball"),
-                (VelocityBallToGoalReward(), 10, "vel_ball_to_goal"),
-                (FaceBallReward(), 0.2, "face_ball"),
-                (AlignBallGoal(), 0.3, "align_ball"),
-                (LiuDistanceBallToGoalReward(), 2, "dist_ball_to_goal"),
-                (ConstantReward(), -3, "neg_const"),
-            )
-
+    rewards = ((VelocityReward(),1),"DEFAULT_SPEED_REWARD")
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

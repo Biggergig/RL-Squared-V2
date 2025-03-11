@@ -51,12 +51,13 @@ class CombinedRewardLog(RewardFunction):
         if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False" and not os.path.exists(".rew_set_global.tmp"):
             Path('.rew_set_global.tmp').touch()
             self.cleaned_up = False
-            self.wandb_run = load_run(reinit=False, reward_fn=True)
+            self.wandb_run = load_run(reward_fn=True)
         else:
             self.wandb_run = None
         self.agg_rewards = []
         self.log_period = log_period
         self.iter = 0
+        print(self.reward_functions)
 
     @classmethod
     def from_zipped(

@@ -20,6 +20,7 @@ gae_gamma: 0.99
 log_to_wandb: true
 
 # Checkpointing
+checkpoint_load_folder: latest
 save_every_ts: 1_000_000
 n_checkpoints_to_keep: 100_000_000
 
