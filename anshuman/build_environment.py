@@ -79,6 +79,19 @@ def build_rocketsim_env():
                 (AlignBallGoal(), .1),
                 (SaveBoostReward(), .1),
                 (InAirReward(), -.75, "air_penalty"),
+             # print("GENTLE_PHASE1")
+            )
+        elif phase == 2:
+            rewards = (
+                (EventReward(touch=.5), 1, "touch"),
+                (EventReward(team_goal=15), 1, "goal"),
+                (EventReward(concede=-15), 1, "enemy_goal"),
+                # (VelocityPlayerToBallReward(), 1),
+                (VelocityBallToGoalReward(), 5),
+                # (FaceBallReward(), 0.05),
+                (AlignBallGoal(), .1),
+                (SaveBoostReward(), .1),
+                # (InAirReward(), -.75, "air_penalty"),
             )
     elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "sparse_phase":
         if phase == 1:
