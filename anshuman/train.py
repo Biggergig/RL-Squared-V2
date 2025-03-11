@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from time import time
+import contextlib
 
 from metricLogger import MyMetricLogger
 from rewards import *
@@ -15,6 +16,9 @@ def run(config):
     print("Loading config into env variables...")
     for key, val in config.items():
         os.environ[f"RLBOT_{key}"] = str(val)
+
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(".rew_set_global.tmp")
 
     metrics_logger = MyMetricLogger()
 

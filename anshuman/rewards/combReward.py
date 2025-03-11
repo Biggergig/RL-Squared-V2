@@ -1,10 +1,15 @@
 from typing import Any, Optional, Tuple, overload, Union
 import os
 
+from pathlib import Path
+import contextlib
+
 import numpy as np
 from rlgym_sim.utils.reward_functions import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
 from wandb_util import load_run
+from time import sleep
+import random
 
 
 class CombinedRewardLog(RewardFunction):
@@ -39,7 +44,11 @@ class CombinedRewardLog(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
-        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False":
+        sleep(random.random()*5) # just to avoid race
+        self.cleaned_up = True
+        if os.environ.get("RLBOT_LOG_REWARDS", "False") != "False" and not os.path.exists(".rew_set_global.tmp"):
+            Path('.rew_set_global.tmp').touch()
+            self.cleaned_up = False
             self.wandb_run = load_run(reinit=False, reward_fn=True)
         else:
             self.wandb_run = None
@@ -94,6 +103,10 @@ class CombinedRewardLog(RewardFunction):
         ]
 
         if self.wandb_run is not None:
+
+            if self.cleaned_up == False:
+                with contextlib.suppress(FileNotFoundError):
+                    os.remove(".rew_set_global.tmp")
             if self.iter % self.log_period == 0:
                 log_dict = {
                     f"rewards/{i+1}_"
