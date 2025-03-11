@@ -107,6 +107,7 @@ class CombinedRewardLog(RewardFunction):
             if self.cleaned_up == False:
                 with contextlib.suppress(FileNotFoundError):
                     os.remove(".rew_set_global.tmp")
+                self.cleaned_up = True
             if self.iter % self.log_period == 0:
                 log_dict = {
                     f"rewards/{i+1}_"
