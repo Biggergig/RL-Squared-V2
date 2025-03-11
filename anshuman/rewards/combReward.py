@@ -117,7 +117,7 @@ class CombinedRewardLog(RewardFunction):
                     os.remove(".rew_set_global.tmp")
                 self.cleaned_up = True
             self.agg_rewards.append(rewards)
-            if self.iter % self.log_period == 0:
+            if len(self.agg_rewards) >= self.log_period:
                 mean_rew = [0]*len(rewards)
                 for row in self.agg_rewards:
                     for i in range(len(row)):
@@ -136,7 +136,6 @@ class CombinedRewardLog(RewardFunction):
                     np.dot(self.reward_weights, rewards)
                 )
                 self.wandb_run.log(log_dict)
-                self.iter = 0
             self.iter += 1
 
         return float(np.dot(self.reward_weights, rewards))
@@ -168,6 +167,8 @@ class CombinedRewardLog(RewardFunction):
             log_dict["rewards/0_TotalReward"] = float(
                 np.dot(self.reward_weights, rewards)
             )
+            log_dict["rewards/0_EpisodeLength"] = self.iter
+            self.iter = 0
             self.wandb_run.log(log_dict)
 
         return float(np.dot(self.reward_weights, rewards))
