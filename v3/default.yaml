@@ -1,9 +1,39 @@
-render: false
-n_proc: 4
+# General
+_name: default
+_phase: 0
+
+# Learning params
 ts_per_iteration: 50_000
 _exp_buffer_size_multiple: 3
+ppo_epochs: 2
+ppo_ent_coef: 0.01
+
+# Model params
 policy_layer_sizes: [64, 64]
 critic_layer_sizes: [64, 64]
+policy_lr: 1.e-4
+critic_lr: 1.e-4
+gae_lambda: 0.95
+gae_gamma: 0.99
 
+# Logging
+log_to_wandb: true
+
+# Checkpointing
+save_every_ts: 1_000_000
+n_checkpoints_to_keep: 100_000_000
+
+# CPU SPM optimization
+n_proc: 4
+
+# GPU SPM optimization
+ppo_minibatch_size: 25_000
+
+# Rendering
+render: false
 render_delay: 0
-timestep_limit: 1_000_000_000_000
+
+# Constants
+timestep_limit: 1.e15
+standardize_returns: false
+standardize_obs: false
