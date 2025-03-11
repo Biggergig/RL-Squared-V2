@@ -15,7 +15,7 @@ def run(config):
     config["RUN_ID"] = str(int(time()))
     print("Loading config into env variables...")
     for key, val in config.items():
-        os.environ[f"RLBOT_{key}"] = str(val)
+        os.environ[f"RLBOT_{key.upper()}"] = str(val)
 
     with contextlib.suppress(FileNotFoundError):
         os.remove(".rew_set_global.tmp")
