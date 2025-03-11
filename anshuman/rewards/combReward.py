@@ -91,6 +91,7 @@ class CombinedRewardLog(RewardFunction):
 
         :param initial_state: The initial state of the reset environment.
         """
+        self.iter = 0
         for func in self.reward_functions:
             func.reset(initial_state)
 

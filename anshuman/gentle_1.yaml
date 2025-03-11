@@ -21,5 +21,7 @@ log_rewards: true
 network_shape:
   - 1024
   - 1024
+  - 1024
+  - 512
   - 512
   - 512
