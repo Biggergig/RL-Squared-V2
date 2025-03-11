@@ -1,13 +1,9 @@
 import numpy as np
 import os
-from time import time
 
-from .metricLogger import MyMetricLogger
-from .rewards import *
+from .models import *
 
 import rlgym_sim
-from rlgym_sim.utils.reward_functions import CombinedReward
-from rlgym_sim.utils.reward_functions.common_rewards import *
 from rlgym_sim.utils.obs_builders import DefaultObs
 from rlgym_sim.utils.terminal_conditions.common_conditions import *
 from rlgym_sim.utils import common_values
@@ -23,13 +19,8 @@ def build_rocketsim_env():
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
-    phase = int(os.environ["RLBOT_PHASE"])
-    try:
-        phase = int(phase)
-    except ValueError:
-        print("Phase not set")
-        phase = -1
-    # print("Environment phase:", phase)
+    NAME = os.environ["RLBOT_NAME"]
+    PHASE = int(os.environ["RLBOT_PHASE"])
 
     action_parser = DiscreteAction()
     terminal_conditions = [
@@ -37,9 +28,7 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    rewards = ((VelocityReward(negative=True), 1, "NEG_VEL_REWARD"),)
-
-    reward_fn = CombinedRewardLog.from_zipped(*rewards)
+    reward_fn = model_selector(NAME, PHASE)
 
     obs_builder = DefaultObs(
         pos_coef=np.asarray(

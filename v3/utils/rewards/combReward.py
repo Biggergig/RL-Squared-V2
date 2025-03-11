@@ -46,7 +46,7 @@ class CombinedRewardLog(RewardFunction):
                     "length ({1}) must be equal"
                 ).format(len(self.reward_functions), len(self.reward_weights))
             )
-        sleep(random.random() * 5)  # just to avoid race
+        # sleep(random.random() * 5)  # just to avoid race
         self.cleaned_up = True
         if os.environ.get(
             "RLBOT_LOG_REWARDS", "False"

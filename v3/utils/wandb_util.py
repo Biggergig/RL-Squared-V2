@@ -9,7 +9,7 @@ def load_run(config=None, reward_fn=False) -> Run | None:
     PHASE = int(os.environ["RLBOT_PHASE"])
 
     run_name = "Rewards" if reward_fn else "PPO"
-    project_name = f"{NAME}_phase{PHASE}"
+    project_name = f"v3_{NAME}_phase{PHASE}"
     group_name = os.environ["RLBOT_RUN_ID"]
 
     if os.environ["RLBOT_LOG_TO_WANDB"] == "True":

@@ -41,3 +41,4 @@ timestep_limit: 1_000_000_000_000
 standardize_returns: false
 standardize_obs: false
 add_unix_timestamp: false
+instance_launch_delay: .1

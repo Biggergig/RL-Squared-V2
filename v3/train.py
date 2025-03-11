@@ -6,12 +6,14 @@ from utils import *
 
 @arguably.command
 def run(
-    config: str = "default.yaml",
+    config: str = None,
     *,
     nproc: int = None,
     checkpoint: str = None,
     log_rewards: bool = None,
     no_render: bool = False,
+    dry: bool = False,
+    new: bool = False,
 ):
     import time
     from rlgym_ppo import Learner
@@ -19,8 +21,20 @@ def run(
     import warnings
 
     warnings.simplefilter(action="ignore", category=FutureWarning)
-    with open(config, "r") as f:
-        config_dict = yaml.safe_load(f)
+    with open("cfg/default.yaml", "r") as f:
+        default_config_dict = yaml.safe_load(f)
+
+    config_dict = {}
+    if config is not None:
+        try:
+            with open(config, "r") as f:
+                config_dict = yaml.safe_load(f)
+        except FileNotFoundError:
+            print("Config file not found, using default")
+
+    for k, v in default_config_dict.items():
+        if k not in config_dict:
+            config_dict[k] = v
 
     # load cmd line args
     if nproc is not None:
@@ -31,6 +45,10 @@ def run(
         config_dict["_log_rewards"] = log_rewards
     if no_render:
         config_dict["render"] = False
+    if dry:
+        config_dict["log_to_wandb"] = False
+    if new:
+        config_dict["checkpoint_load_folder"] = None
 
     config_dict["exp_buffer_size"] = (
         int(config_dict["_exp_buffer_size_multiple"]) * config_dict["ts_per_iteration"]
@@ -59,7 +77,7 @@ def run(
     with contextlib.suppress(FileNotFoundError):  # lock for only one logger
         os.remove(".rew_set_global.tmp")
 
-    learner = Learner(build_rocketsim_env, **inp_cfg)
+    learner = Learner(build_rocketsim_env, metrics_logger=MyMetricLogger(), **inp_cfg)
 
     learner.learn()
 
