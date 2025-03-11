@@ -1,6 +1,6 @@
 from rlgym_sim.utils.gamestates import GameState
 from rlgym_ppo.util import MetricsLogger
-from rewards import DistancePlayerToBallReward
+from .rewards import DistancePlayerToBallReward
 
 
 class MyMetricLogger(MetricsLogger):

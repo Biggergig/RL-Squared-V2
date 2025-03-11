@@ -2,8 +2,8 @@ import numpy as np
 import os
 from time import time
 
-from v3.utils.metricLogger import MyMetricLogger
-from rewards import *
+from .metricLogger import MyMetricLogger
+from .rewards import *
 
 import rlgym_sim
 from rlgym_sim.utils.reward_functions import CombinedReward

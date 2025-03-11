@@ -7,7 +7,7 @@ import contextlib
 import numpy as np
 from rlgym_sim.utils.reward_functions import RewardFunction
 from rlgym_sim.utils.gamestates import GameState, PlayerData
-from v3.utils.wandb_util import load_run
+from ..wandb_util import load_run
 from time import sleep
 import random
 
