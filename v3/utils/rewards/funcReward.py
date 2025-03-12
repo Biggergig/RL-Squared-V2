@@ -59,16 +59,21 @@ class TimeReward(RewardFunction):
         return rew * self.time_fn(self.ts * self.n_proc)
 
 
-def curriculum(start, m1, m2, end2):
+def curriculum(start, m1, m2, end):
     def fn(t):
-        if t < start or t > end2:
+        if t < start or t > end:
             return 0
         if m1 <= t <= m2:
             return 1
         if start <= t < m1:
             return (t - start) / (m1 - start)
-        if m2 <= t < end2:
-            return (end2 - t) / (end2 - m2)
+        if m2 <= t < end:
+            return (end - t) / (end - m2)
         return -1
 
     return fn
+
+
+class CurriculumReward(TimeReward):
+    def __init__(self, reward_fn, start, m1, m2, end):
+        super().__init__(reward_fn, curriculum(start, m1, m2, end))
