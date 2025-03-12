@@ -1,0 +1,24 @@
+# General
+_name: debug
+_phase: 1
+
+# Learning params
+ts_per_iteration: 1_000
+ppo_epochs: 3
+
+# Model params
+policy_layer_sizes: [64]
+critic_layer_sizes: [64]
+
+# Checkpointing
+checkpoint_load_folder: null
+save_every_ts: 10_000_000
+
+# CPU SPM optimization
+n_proc: 4
+
+# GPU SPM optimization
+ppo_minibatch_size: 1_000
+
+# Rendering
+render: true

@@ -19,6 +19,19 @@ def model_selector(model_name, phase):
                 (AlignBallGoal(), 0.1),
                 (SaveBoostReward(), 0.1),
             )
+    elif model_name == "debug":
+        print("DEBUG MODEL")
+        rewards = (
+            (
+                FnReward(
+                    ConstantReward(),
+                    lambda rew, ts: rew if ts >= 7000 else 0,
+                    n_proc=4,
+                ),
+                1,
+                "OFF BEFORE 1k",
+            ),
+        )
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

@@ -9,6 +9,7 @@ def run(
     config: str = None,
     *,
     nproc: int = None,
+    name: str = None,
     checkpoint: str = None,
     log_rewards: bool = None,
     no_render: bool = False,
@@ -41,6 +42,8 @@ def run(
     # load cmd line args
     if nproc is not None:
         config_dict["n_proc"] = nproc
+    if name is not None:
+        config_dict["_name"] = name
     if checkpoint is not None:
         config_dict["checkpoint_load_folder"] = checkpoint
     if log_rewards is not None:
