@@ -22,34 +22,48 @@ def model_selector(model_name, phase):
     if model_name == "curriculum":
         if phase == 1:
             rewards = (
+                # Touch stays full until 20m then drops until 80m
                 (
                     CurriculumReward(
                         EventReward(touch=1),
                         -1,
                         0,
                         20_000_000,
-                        40_000_000,
+                        80_000_000,
                     ),
                     1,
                     "touch",
                 ),
                 (EventReward(team_goal=15), 1, "goal"),
                 (EventReward(concede=-10), 1, "enemy_goal"),
+                # Velocity player to ball stays full until 50m then drops until 100m
                 (
                     CurriculumReward(
-                        VelocityPlayerToBallReward(), -1, 0, 50_000_000, 100_000_000
+                        VelocityPlayerToBallReward(),
+                        -1,
+                        0,
+                        50_000_000,
+                        100_000_000,
                     ),
                     1,
                     "VelPlayerToBall",
                 ),
                 (VelocityBallToGoalReward(), 5),
                 (
-                    CurriculumReward(FaceBallReward(), -1, 0, 20_000_000, 50_000_000),
+                    CurriculumReward(
+                        FaceBallReward(),
+                        -1,
+                        0,
+                        1_000_000,
+                        10_000_000,
+                    ),
                     0.05,
                     "FaceBall",
                 ),
                 (
-                    CurriculumReward(AlignBallGoal(), -1, 0, 20_000_000, 50_000_000),
+                    CurriculumReward(
+                        AlignBallGoal(), 0, 10_000_000, 50_000_000, 100_000_000
+                    ),
                     0.1,
                     "AlignBallGoal",
                 ),
