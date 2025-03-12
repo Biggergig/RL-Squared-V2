@@ -20,18 +20,29 @@ def model_selector(model_name, phase):
                 (SaveBoostReward(), 0.1),
             )
     elif model_name == "debug":
-        print("DEBUG MODEL")
-        rewards = (
-            (
-                FnReward(
-                    ConstantReward(),
-                    lambda rew, ts: rew if ts >= 7000 else 0,
-                    n_proc=4,
+        print("DEBUG MODEL, PHASE", phase)
+        if phase == 1:
+            rewards = (
+                (
+                    FnReward(
+                        ConstantReward(),
+                        lambda rew, ts: rew if ts >= 7000 else 0,
+                    ),
+                    1,
+                    "OFF BEFORE 1k",
                 ),
-                1,
-                "OFF BEFORE 1k",
-            ),
-        )
+            )
+        elif phase == 2:
+            rewards = (
+                (
+                    TimeReward(
+                        ConstantReward(),
+                        curriculum(10000, 20000, 30000, 50000),
+                    ),
+                    1,
+                    "Curriculum 0-20k-30k-50k",
+                ),
+            )
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

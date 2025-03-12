@@ -3,7 +3,7 @@ _name: debug
 _phase: 1
 
 # Learning params
-ts_per_iteration: 1_000
+ts_per_iteration: 10_000
 ppo_epochs: 3
 
 # Model params
@@ -18,7 +18,7 @@ save_every_ts: 10_000_000
 n_proc: 4
 
 # GPU SPM optimization
-ppo_minibatch_size: 1_000
+ppo_minibatch_size: 10_000
 
 # Rendering
 render: true

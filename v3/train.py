@@ -10,6 +10,7 @@ def run(
     *,
     nproc: int = None,
     name: str = None,
+    phase: int = None,
     checkpoint: str = None,
     log_rewards: bool = None,
     no_render: bool = False,
@@ -44,6 +45,8 @@ def run(
         config_dict["n_proc"] = nproc
     if name is not None:
         config_dict["_name"] = name
+    if phase is not None:
+        config_dict["_phase"] = phase
     if checkpoint is not None:
         config_dict["checkpoint_load_folder"] = checkpoint
     if log_rewards is not None:
@@ -80,6 +83,7 @@ def run(
     os.environ["RLBOT_LOG_TO_WANDB"] = str(config_dict["log_to_wandb"])
     os.environ["RLBOT_LOG_REWARDS"] = str(config_dict["_log_rewards"])
     os.environ["RLBOT_RUN_ID"] = str(config_dict["_RUN_ID"])
+    os.environ["RLBOT_N_PROC"] = str(config_dict["n_proc"])
 
     inp_cfg["wandb_run"] = load_run(config=config_dict, reward_fn=False)
 
