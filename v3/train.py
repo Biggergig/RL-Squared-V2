@@ -30,11 +30,8 @@ def run(
 
     config_dict = {}
     if config is not None:
-        try:
-            with open(config, "r") as f:
-                config_dict = yaml.safe_load(f)
-        except FileNotFoundError:
-            print("Config file not found, using default")
+        with open(config, "r") as f:
+            config_dict = yaml.safe_load(f)
 
     for k, v in default_config_dict.items():
         if k not in config_dict:
