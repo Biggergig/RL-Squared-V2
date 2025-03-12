@@ -11,7 +11,7 @@ from rlgym_sim.utils.action_parsers import DiscreteAction
 from rlgym_sim.utils.state_setters import RandomState
 
 
-def build_rocketsim_env():
+def build_rocketsim_env(name=None, phase=None):
     spawn_opponents = True
     team_size = 1
     game_tick_rate = 120
@@ -19,8 +19,8 @@ def build_rocketsim_env():
     timeout_seconds = 30
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
-    NAME = os.environ["RLBOT_NAME"]
-    PHASE = int(os.environ["RLBOT_PHASE"])
+    NAME = name or os.environ["RLBOT_NAME"]
+    PHASE = phase or int(os.environ["RLBOT_PHASE"])
 
     action_parser = DiscreteAction()
     terminal_conditions = [
