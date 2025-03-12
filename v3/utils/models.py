@@ -67,6 +67,13 @@ def model_selector(model_name, phase):
                     "AlignBallGoal",
                 ),
                 (SaveBoostReward(), 0.1),
+                (
+                    CurriculumReward(
+                        ConstantReward(), -1, 0, 100_000_000, 1_000_000_000
+                    ),
+                    1e-6,
+                    "REWSTEP",
+                ),
             )
     elif model_name == "debug":
         print("DEBUG MODEL, PHASE", phase)
