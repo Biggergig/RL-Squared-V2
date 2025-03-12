@@ -15,6 +15,7 @@ def run(
     dry: bool = False,
     new: bool = False,
     load_delay: float = None,
+    batch_size: int = None,
 ):
     import time
     from rlgym_ppo import Learner
@@ -52,6 +53,8 @@ def run(
         config_dict["checkpoint_load_folder"] = None
     if load_delay is not None:
         config_dict["instance_launch_delay"] = load_delay
+    if batch_size is not None:
+        config_dict["ppo_minibatch_size"] = batch_size
 
     config_dict["exp_buffer_size"] = (
         int(config_dict["_exp_buffer_size_multiple"]) * config_dict["ts_per_iteration"]
