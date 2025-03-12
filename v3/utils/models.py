@@ -6,7 +6,7 @@ from rlgym_sim.utils.reward_functions.common_rewards import *
 def model_selector(model_name, phase):
     rewards = ((VelocityReward(negative=True), 10, "neg_vel_reward"),)
 
-    if model_name == "gentle":
+    if model_name.startswith("gentle"):
         if phase == 1:
             # print("GENTLE_PHASE1")
             rewards = (
