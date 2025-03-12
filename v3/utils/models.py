@@ -33,8 +33,8 @@ def model_selector(model_name, phase):
                     1,
                     "touch",
                 ),
-                (EventReward(team_goal=15), 1, "goal"),
-                (EventReward(concede=-10), 1, "enemy_goal"),
+                (EventReward(team_goal=50), 1, "goal"),
+                (EventReward(concede=-30), 1, "enemy_goal"),
                 # Velocity player to ball stays full until 50m then drops until 100m
                 (
                     CurriculumReward(
@@ -71,7 +71,7 @@ def model_selector(model_name, phase):
                     CurriculumReward(
                         ConstantReward(), -1, 0, 100_000_000, 1_000_000_000
                     ),
-                    1e-6,
+                    1e-4,
                     "REWSTEP",
                 ),
             )
