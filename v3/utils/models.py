@@ -22,13 +22,37 @@ def model_selector(model_name, phase):
     if model_name == "curriculum":
         if phase == 1:
             rewards = (
-                (EventReward(touch=1), 1, "touch"),
+                (
+                    CurriculumReward(
+                        EventReward(touch=1),
+                        -1,
+                        0,
+                        20_000_000,
+                        40_000_000,
+                    ),
+                    1,
+                    "touch",
+                ),
                 (EventReward(team_goal=15), 1, "goal"),
                 (EventReward(concede=-10), 1, "enemy_goal"),
-                (VelocityPlayerToBallReward(), 1),
+                (
+                    CurriculumReward(
+                        VelocityPlayerToBallReward(), -1, 0, 50_000_000, 100_000_000
+                    ),
+                    1,
+                    "VelPlayerToBall",
+                ),
                 (VelocityBallToGoalReward(), 5),
-                (FaceBallReward(), 0.05),
-                (AlignBallGoal(), 0.1),
+                (
+                    CurriculumReward(FaceBallReward(), -1, 0, 20_000_000, 50_000_000),
+                    0.05,
+                    "FaceBall",
+                ),
+                (
+                    CurriculumReward(AlignBallGoal(), -1, 0, 20_000_000, 50_000_000),
+                    0.1,
+                    "AlignBallGoal",
+                ),
                 (SaveBoostReward(), 0.1),
             )
     elif model_name == "debug":
