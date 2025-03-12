@@ -18,6 +18,19 @@ def model_selector(model_name, phase):
             (AlignBallGoal(), 0.1),
             (SaveBoostReward(), 0.1),
         )
+    if model_name.startswith("grounded"):
+        # print("GENTLE_PHASE1")
+        rewards = (
+            (EventReward(touch=1), 1, "touch"),
+            (EventReward(team_goal=15), 1, "goal"),
+            (EventReward(concede=-10), 1, "enemy_goal"),
+            (VelocityPlayerToBallReward(), 1),
+            (VelocityBallToGoalReward(), 5),
+            (FaceBallReward(), 0.05),
+            (AlignBallGoal(), 0.1),
+            (SaveBoostReward(), 0.1),
+            (InAirReward(), -0.75, "air_penalty"),
+        )
     if model_name == "curriculum":
         if phase == 1:
             rewards = (

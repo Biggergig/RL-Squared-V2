@@ -37,7 +37,7 @@ def build_rocketsim_env():
         GoalScoredCondition(),
     ]
 
-    rewards = ((VelocityReward(),1),)
+    rewards = ((VelocityReward(), 1),)
     # print("PREFIX:", os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"])
     if os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "align_phase":
         if phase == 1:
@@ -63,8 +63,8 @@ def build_rocketsim_env():
                 (VelocityPlayerToBallReward(), 1),
                 (VelocityBallToGoalReward(), 3),
                 (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
+                (AlignBallGoal(), 0.1),
+                (SaveBoostReward(), 0.1),
             )
     elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "grounded_phase":
         if phase == 1:
@@ -76,21 +76,21 @@ def build_rocketsim_env():
                 (VelocityPlayerToBallReward(), 1),
                 (VelocityBallToGoalReward(), 3),
                 (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
-                (InAirReward(), -.75, "air_penalty"),
-             # print("GENTLE_PHASE1")
+                (AlignBallGoal(), 0.1),
+                (SaveBoostReward(), 0.1),
+                (InAirReward(), -0.75, "air_penalty"),
+                # print("GENTLE_PHASE1")
             )
         elif phase == 2:
             rewards = (
-                (EventReward(touch=.5), 1, "touch"),
+                (EventReward(touch=0.5), 1, "touch"),
                 (EventReward(team_goal=15), 1, "goal"),
                 (EventReward(concede=-15), 1, "enemy_goal"),
                 # (VelocityPlayerToBallReward(), 1),
                 (VelocityBallToGoalReward(), 5),
                 # (FaceBallReward(), 0.05),
-                (AlignBallGoal(), .1),
-                (SaveBoostReward(), .1),
+                (AlignBallGoal(), 0.1),
+                (SaveBoostReward(), 0.1),
                 # (InAirReward(), -.75, "air_penalty"),
             )
     elif os.environ["RLBOT_WANDB_PROJECT_NAME_PREFIX"] == "sparse_phase":
@@ -140,7 +140,6 @@ def build_rocketsim_env():
                 (LiuDistanceBallToGoalReward(), 2, "dist_ball_to_goal"),
                 (ConstantReward(), -3, "neg_const"),
             )
-
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 

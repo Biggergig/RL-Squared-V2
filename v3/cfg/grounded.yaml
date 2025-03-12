@@ -1,5 +1,5 @@
 # General
-_name: gentle_tiny
+_name: grounded
 _phase: 1
 
 # Learning params
@@ -7,8 +7,8 @@ ts_per_iteration: 100_000
 ppo_epochs: 3
 
 # Model params
-policy_layer_sizes: [512, 512, 512]
-critic_layer_sizes: [512, 512, 512]
+policy_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
+critic_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
 policy_lr: 2.0e-4
 critic_lr: 2.0e-4
 
@@ -19,7 +19,6 @@ _log_rewards: true
 # Checkpointing
 checkpoint_load_folder: latest
 save_every_ts: 10_000_000
-timestep_limit: 30_000_000 # then swap to tiny2
 
 # CPU SPM optimization
 n_proc: 32

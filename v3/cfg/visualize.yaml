@@ -1,0 +1,29 @@
+# General
+_name: visualize
+_phase: 1
+
+# Learning params
+ts_per_iteration: 10_000_000
+ppo_epochs: 1
+
+# Model params
+policy_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
+critic_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
+
+# Checkpointing
+checkpoint_load_folder: data\checkpoints\curriculum\remote\curriculum\1\397859858
+save_every_ts: 1_000_000_000
+
+# CPU SPM optimization
+n_proc: 1
+
+# GPU SPM optimization
+ppo_minibatch_size: 10_000
+
+# Rendering
+render: true
+render_delay: .04
+
+# Logging
+log_to_wandb: false
+_log_rewards: false
