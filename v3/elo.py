@@ -26,14 +26,12 @@ for m in models:
 matches = pd.read_csv("matches.csv", index_col=0)
 for _, m1, m2, *goals in tqdm(matches.itertuples(), desc="Loading matches"):
     ts.match(m1, m2, goals)
-# print(matches)
 
 
 def logMatch(name1, name2, goals):
     global matches
     matches = pd.read_csv("matches.csv", index_col=0)
     matches.loc[time()] = [name1, name2, *goals]
-    # matches.index += 1
     matches.sort_index()
     matches.to_csv("matches.csv", index=True)
 
@@ -44,7 +42,11 @@ def softmax(x, temp=1):
     return np.exp(x) / sum(np.exp(x))
 
 
-def chooseTwo(ts, temp=2):
+def chooseTwo(ts, top_k=-1, temp=2):
+    if top_k != -1:
+        top_bots = ts.getModelsDF(matches).sort_values("rank").head(top_k).index
+        # print("loading from", top_bots)
+        return np.random.choice(list(top_bots), 2, replace=False)
     sig = np.array([t.sigma for t, in ts.bots.values()])
     probs = softmax(sig, temp)
     # print(probs)
@@ -57,7 +59,7 @@ def init_child(lock_):
 
 
 def run(args):
-    id, batch_size, iters, render, speed = args
+    id, batch_size, iters, top_k, render, speed = args
     if id != 0:
         render = False
         speed = None
@@ -67,10 +69,10 @@ def run(args):
         for _ in range(batch_size):
             # print(ts.getModelsDF(matches).sort_values("name"), "\n")
 
-            n1, n2 = chooseTwo(ts, temp=0.8)
+            n1, n2 = chooseTwo(ts, top_k=top_k, temp=0.8)
             # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
             goals = sim_match(
-                names_to_models[n1], names_to_models[n2], 20, render, speed
+                names_to_models[n1], names_to_models[n2], 3, render, speed
             )
             ts.match(n1, n2, goals)
             batch.append([n1, n2, goals])
@@ -78,9 +80,6 @@ def run(args):
             for n1, n2, goals in batch:
                 print(f"{id}: writing", n1, n2, goals)
                 logMatch(n1, n2, goals)
-        if id == 0:
-            df = ts.getModelsDF(matches).sort_values("name")
-            print(df, "\nTOTAL GOALS:", df.win.sum() + df.draw.sum() / 2)
 
 
 @arguably.command
@@ -91,11 +90,23 @@ def main(
     iters: int = 1,
     render: bool = False,
     speed: float = None,
+    top_k: int = -1,
 ):
-    print("Starting ELO arena with", threads, "threads")
-    write_lock = Lock()
-    with Pool(threads, initializer=init_child, initargs=(write_lock,)) as pool:
-        pool.map(run, [(i, batch_size, iters, render, speed) for i in range(threads)])
+    if threads > 0:
+        print("Starting ELO arena with", threads, "threads")
+        write_lock = Lock()
+        with Pool(threads, initializer=init_child, initargs=(write_lock,)) as pool:
+            pool.map(
+                run,
+                [(i, batch_size, iters, top_k, render, speed) for i in range(threads)],
+            )
+    df = ts.getModelsDF(matches).sort_values("name")
+    print(
+        df,
+        df.sort_values("rank"),
+        f"TOTAL GOALS: {int( df.win.sum() + df.draw.sum() / 2 )}",
+        sep="\n\n",
+    )
 
 
 if __name__ == "__main__":

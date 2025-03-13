@@ -1,10 +1,11 @@
-from openskill.models import PlackettLuce
+from openskill.models import *
 import pandas as pd
 
 
 class TournamentSkill:
     def __init__(self):
-        self.model = PlackettLuce(balance=True)
+        self.model = PlackettLuce()
+        # self.model = BradleyTerryFull(balance=False)
         self.bots = {}
 
     def add_player(self, name):
@@ -55,7 +56,10 @@ class TournamentSkill:
             *self.model.predict_rank([self.bots[n] for n in df["name"]])
         )
         df = (
-            df.assign(rank=ranks, rank_prob=rank_prob)
+            df.assign(
+                rank=ranks,
+                rank_prob=rank_prob,
+            )
             .set_index("name")
             .sort_values("rank")
         )
@@ -68,4 +72,7 @@ class TournamentSkill:
             df.loc[m2, "win"] += goals[2]
             df.loc[m2, "draw"] += goals[1]
             df.loc[m2, "loss"] += goals[0]
+        df = df.assign(
+            wr=(df.win + (df.draw * 0.5)) / (df.win + df.loss + df.draw),
+        )
         return df
