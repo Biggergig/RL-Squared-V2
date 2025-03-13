@@ -10,7 +10,9 @@ from multiprocessing import Pool, Lock
 import arguably
 
 model_paths = [
-    os.path.join("elo_system/compare", f) for f in os.listdir("elo_system/compare")
+    os.path.join("elo_system/compare", f)
+    for f in os.listdir("elo_system/compare")
+    if f != ".gitignore"
 ]
 models = [Model(p) for p in model_paths]
 
@@ -85,8 +87,8 @@ def run(args):
 def main(
     *,
     threads: int = 2,
-    batch_size: int = 5,
-    iters: int = 2,
+    batch_size: int = 2,
+    iters: int = 1,
     render: bool = False,
     speed: float = None,
 ):
