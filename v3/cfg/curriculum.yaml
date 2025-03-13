@@ -3,14 +3,14 @@ _name: curriculum
 _phase: 1
 
 # Learning params
-ts_per_iteration: 100_000
+ts_per_iteration: 300_000
 ppo_epochs: 3
 
 # Model params
 policy_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
 critic_layer_sizes: [1024, 1024, 1024, 512, 512, 512]
-policy_lr: 2.0e-4
-critic_lr: 2.0e-4
+policy_lr: 1.0e-4
+critic_lr: 1.0e-4
 
 # Logging
 log_to_wandb: true
