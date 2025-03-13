@@ -49,7 +49,7 @@ class TournamentSkill:
                 [n, pls.mu, pls.sigma, self.getSkill(n, elo=True), 0, 0, 0]
                 for n, (pls,) in self.bots.items()
             ],
-            columns=["name", "mu", "sigma", "elo", "win", "draw", "loss"],
+            columns=["name", "mean", "var", "elo", "win", "draw", "loss"],
         )
         ranks, rank_prob = zip(
             *self.model.predict_rank([self.bots[n] for n in df["name"]])

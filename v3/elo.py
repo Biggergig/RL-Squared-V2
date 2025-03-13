@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+from time import time
 
 model_paths = [os.path.join("data/compare", f) for f in os.listdir("data/compare")]
 models = [Model(p) for p in model_paths]
@@ -16,17 +17,18 @@ ts = TournamentSkill()
 for m in models:
     ts.add_player(m.name)
 
-matches = pd.read_csv("matches.csv")
+matches = pd.read_csv("matches.csv", index_col=0)
 for _, m1, m2, *goals in tqdm(matches.itertuples(), desc="Loading matches"):
     ts.match(m1, m2, goals)
+# print(matches)
 
 
 def logMatch(name1, name2, goals):
     global matches
-    matches.loc[-1] = [name1, name2, *goals]
-    matches.index += 1
+    matches.loc[time()] = [name1, name2, *goals]
+    # matches.index += 1
     matches.sort_index()
-    matches.to_csv("matches.csv", index=False)
+    matches.to_csv("matches.csv", index=True)
 
 
 # for i in range(len(models)):
@@ -52,10 +54,10 @@ def chooseTwo(ts, temp=2):
     return np.random.choice(list(ts.bots.keys()), 2, p=probs, replace=False)
 
 
-for _ in range(10):
-    print(ts.getModelsDF(matches), "\n")
-    n1, n2 = chooseTwo(ts, temp=1)
-    # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=3)
+for _ in range(100):
+    print(ts.getModelsDF(matches).sort_values("name"), "\n")
+    n1, n2 = chooseTwo(ts, temp=0.6)
+    # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
     goals = sim_match(names_to_models[n1], names_to_models[n2], 5)
     ts.match(n1, n2, goals)
     logMatch(n1, n2, goals)
