@@ -80,7 +80,7 @@ def run(args):
                 logMatch(n1, n2, goals)
         if id == 0:
             df = ts.getModelsDF(matches)
-            print(df, "\nTOTAL MATCHES:", df.win.sum() + df.draw.sum() / 2)
+            print(df, "\nTOTAL GOALS:", df.win.sum() + df.draw.sum() / 2)
 
 
 @arguably.command
