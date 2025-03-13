@@ -40,6 +40,11 @@ class Model:
         self.model.load_state_dict(torch.load(os.path.join(path, "PPO_POLICY.pt")))
         # print(self.name, "is loaded onto", device)
         if self.name is None:
+            self.steps = BOOK_KEEPING["cumulative_timesteps"]
+            self.shape = policy_shape
+            self.param_count = sum(
+                p.numel() for p in self.model.parameters() if p.requires_grad
+            )
             self.name = f"{'_'.join(BOOK_KEEPING['wandb_project'].split('_')[1:-1])}_{BOOK_KEEPING["cumulative_timesteps"]//1_000_000}m"
 
     def act(self, obs):
