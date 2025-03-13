@@ -1,39 +1,81 @@
-\documentclass[12pt, twocolumn]{article}
-
+\documentclass[conference]{IEEEtran}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
+\usepackage{bookmark}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{cite}
 
 \title{RL-Squared Final Report}
-\author{Your Name}
+\author{
+    \IEEEauthorblockN{Anshuman Dash, Phillip Peng, Matthew Shen}
+    \IEEEauthorblockA{
+        Department of Computer Science\\
+        University of California, Santa Barbara\\
+        Email: \{anshumandash, phillippeng, matthewshen\}@ucsb.edu
+    }
+}
 \date{Winter 2025}
+
 
 \begin{document}
 
 \maketitle
 
-\begin{abstract}
 
+\begin{abstract}
+We aim to investigate the use of Reinforcement Learning in the context of the game of Rocket League. Through the uses of PPO and Curriculum Learning through self-play, we train bots on a variety of reward structures and hyperparameters. To do an empirical comparison of the different models, we evaluate the bots against each other in a tournament setting of 1v1 matches to determine model ELO. We analyze the results of this tournament as well as individual models and discuss the implications of our findings.
 \end{abstract}
 
 \section{Introduction}
-
+Reinforcement Learning (RL) is a powerful tool for training agents to perform tasks in a variety of environments. We aim to investigate the use of RL in the context of the game of Rocket League. Rocket League is a popular video game that combines soccer with rocket-powered cars. The game is played in a 3D environment, and players control their cars to hit a ball into the opposing team's goal. The game itself holds a large number of states making it a challenging environment for RL agents to learn in. 
 
 \section{Related Work}
-Reinforcement Learning has plenty of results in game playing settings al;sdkfj;lakdf;aksf. The most famous example is AlphaGo \cite{silver2016mastering}.
+The use of RL to play games has been a popular research topic in recent years, most famously with AlphaGo. The application of RL in other games such as Dota 2  and Starcraft II  has also been explored. 
 
-\cite{zhang2019hierarchical}
+\subsection{PPO}
+
+\begin{algorithm*}
+    \caption{PPO Algorithm}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} initial policy parameters $\theta_0$, initial value function parameters $\phi_0$
+        \For {k = 0,1,2, ... } 
+            \State Collect set of trajectories $\mathcal{D}_k$ by running policy $\pi_k = \pi(\theta_k)$ in the environment
+            \State Compute rewards-to-go $\hat{R}_t$ 
+            \State Compute advantage estimates $\hat{A}_t$ for current value function $V_{\phi_k}$
+            \State Update policy by maximizing PPO-Clip objective:
+            \State \hspace{1cm} $\theta_{k+1} = \arg\underset{\theta}{\max}{\theta} \mathbb{E}_t \left[ \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_k}(a_t|s_t)} \hat{A}_t \right]$
+        \EndFor
+    \end{algorithmic}
+    \label{alg:PPO}
+\end{algorithm*}
+
+\section{Model and Methods}
+Through this work we largely explore how a change in reward structure as well as model hyperparameters affect the performance of trained agents. All models are trained using the Proximal Policy Optimization (PPO) algorithm.
+
+\subsection{Reward Scaling}
+
+\subsection{Reward Structures}
+
+\subsection{Curriculum Learning}
+Curriculum learning is a training strategy where the learning process is organized in a way that gradually increases in complexity. 
+
+We find that this doesn't perform well for a variety of reasons. The increasing sparsification of rewards makes it difficult for the agents to learn effectively. In order to address this, we propose a modified approach that balances exploration and exploitation.
 
 \section{Results}
+We evaluate the performance of the trained agents by having them play against each other in a Placket Luce tournament \cite{ranking2010label} 
 
 
-\newpage
-\bibliographystyle{plain}
-\bibliography{refs}
+\section{Conclusion}
+
+\section{Future Work}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \end{document}
+
