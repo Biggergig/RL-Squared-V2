@@ -20,12 +20,12 @@ TPS = game_tick_rate / tick_skip
 
 
 def build_env():
-    timeout_seconds = 5
+    timeout_seconds = 60
     timeout_ticks = int(round(timeout_seconds * game_tick_rate / tick_skip))
 
     action_parser = DiscreteAction()
     terminal_conditions = [
-        # NoTouchTimeoutCondition(timeout_ticks),
+        NoTouchTimeoutCondition(timeout_ticks),
         GoalScoredCondition(),
     ]
 
@@ -55,8 +55,8 @@ def build_env():
     return env
 
 
-model_1_path = "data\\checkpoints\\curriculum\\remote\\curriculum\\1\\405360906"
-model_2_path = None
+model_1_path = "data/checkpoints/curriculum/remote/curriculum/1/405360906"
+model_2_path = "data/checkpoints/curriculum/remote/curriculum/1/102016886"
 
 
 class Model:
@@ -100,16 +100,15 @@ for _ in range(10):
         actions = np.vstack([m.act(obs[i]) for i, m in enumerate(models)])
         obs, reward, done, state = env.step(actions)
         env.render()
-        for i in range(2):
-            goals[i] += reward[i]
         steps += 1
         # print(env.step(actions))
         # Sleep to keep the game in real time
         # time.sleep(max(0, starttime + steps / TPS - time.time()))
-    goals[int(state["result"]) + 1] += 1
+    goals[-int(state["result"]) + 1] += 1
     length = time.time() - t0
     print(
         "Step time: {:1.5f} | Episode time: {:.2f} | Goals: {}".format(
             length / steps, length, goals
         )
     )
+env.close()
