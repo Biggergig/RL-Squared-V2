@@ -10,7 +10,7 @@ from multiprocessing import Pool, Lock
 import arguably
 
 model_paths = [
-    os.path.join("elo_system/compare", f) for f in os.listdir("data/compare")
+    os.path.join("elo_system/compare", f) for f in os.listdir("elo_system/compare")
 ]
 models = [Model(p) for p in model_paths]
 
