@@ -19,7 +19,7 @@ class TournamentSkill:
                 return
         self.bots[name1], self.bots[name2] = self.model.rate(
             [self.bots[name1], self.bots[name2]],
-            scores=[goals[0] + (goals[1] / 2), goals[2] + (goals[1] / 2)],
+            scores=[goals[0], goals[2]],
         )
 
     def getSkill(self, name, elo=False):
