@@ -43,8 +43,6 @@ def softmax(x, temp=1):
 
 
 def chooseTwo(ts, top_k=-1, temp=2):
-    return ["bulldog_470m"] * 2
-    return "bulldog_470m", "child_654m"
     if top_k != -1:
         top_bots = ts.getModelsDF(matches).sort_values("rank").head(top_k).index
         # print("loading from", top_bots)
