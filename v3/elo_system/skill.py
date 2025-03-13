@@ -1,10 +1,11 @@
-from openskill.models import PlackettLuce
+from openskill.models import *
 import pandas as pd
 
 
 class TournamentSkill:
     def __init__(self):
         self.model = PlackettLuce()
+        # self.model = BradleyTerryFull(balance=False)
         self.bots = {}
 
     def add_player(self, name):
@@ -19,7 +20,7 @@ class TournamentSkill:
                 return
         self.bots[name1], self.bots[name2] = self.model.rate(
             [self.bots[name1], self.bots[name2]],
-            scores=[goals[0] + (goals[1] / 2), goals[2] + (goals[1] / 2)],
+            scores=[goals[0], goals[2]],
         )
 
     def getSkill(self, name, elo=False):
@@ -49,13 +50,16 @@ class TournamentSkill:
                 [n, pls.mu, pls.sigma, self.getSkill(n, elo=True), 0, 0, 0]
                 for n, (pls,) in self.bots.items()
             ],
-            columns=["name", "mu", "sigma", "elo", "win", "draw", "loss"],
+            columns=["name", "mean", "var", "elo", "win", "draw", "loss"],
         )
         ranks, rank_prob = zip(
             *self.model.predict_rank([self.bots[n] for n in df["name"]])
         )
         df = (
-            df.assign(rank=ranks, rank_prob=rank_prob)
+            df.assign(
+                rank=ranks,
+                rank_prob=rank_prob,
+            )
             .set_index("name")
             .sort_values("rank")
         )
@@ -68,4 +72,7 @@ class TournamentSkill:
             df.loc[m2, "win"] += goals[2]
             df.loc[m2, "draw"] += goals[1]
             df.loc[m2, "loss"] += goals[0]
+        df = df.assign(
+            wr=(df.win + (df.draw * 0.5)) / (df.win + df.loss + df.draw),
+        )
         return df

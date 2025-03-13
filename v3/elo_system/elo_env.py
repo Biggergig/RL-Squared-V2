@@ -13,7 +13,8 @@ def build_env():
 
     action_parser = DiscreteAction()
     terminal_conditions = [
-        NoTouchTimeoutCondition(timeout_ticks),
+        TimeoutCondition(timeout_ticks),
+        NoTouchTimeoutCondition(timeout_ticks // 6),
         GoalScoredCondition(),
     ]
 
