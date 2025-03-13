@@ -5,18 +5,15 @@ import numpy as np
 from tqdm import tqdm
 
 
-def sim_match(elo, model1, model2, n=100, render=False, speed=None):
+def sim_match(model1, model2, n=100, render=False, speed=None):
     env = build_env()
 
     models = [model1, model2]
-    for m in models:
-        if m.name not in elo.ratingDict:
-            elo.addPlayer(m.name)
 
-    goals = [0, 0, 0]
+    goals = [0.0] * 3
     # orange, timeout, blue
     for _ in (pbar := tqdm(range(n))):
-        pbar.set_description(f"Goals: {goals}")
+        pbar.set_description(f"{model1.name} vs {model2.name} / Goals: {goals}")
         obs = env.reset()
 
         done = False
@@ -32,13 +29,8 @@ def sim_match(elo, model1, model2, n=100, render=False, speed=None):
                 env.render()
                 if speed is not None:
                     time.sleep(max(0, starttime + steps / (TPS * speed) - time.time()))
-        goals[-int(state["result"]) + 1] += 1
-        if state["result"] == 1:
-            elo.gameOver(models[0].name, models[1].name)
-        elif state["result"] == 0:
-            elo.gameOver(models[0].name, models[1].name, tie=True)
-        elif state["result"] == -1:
-            elo.gameOver(models[1].name, models[0].name)
+        goals[-int(state["result"]) + 1] += 1.0
+        pbar.set_description(f"{model1.name} vs {model2.name} / Goals: {goals}")
 
-    env.close()
+    # env.close()
     return goals
