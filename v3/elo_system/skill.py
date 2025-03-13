@@ -17,7 +17,8 @@ class TournamentSkill:
             if n not in self.bots:
                 self.add_player(n)
         self.bots[name1], self.bots[name2] = self.model.rate(
-            [self.bots[name1], self.bots[name2]], scores=[goals[0], goals[2]]
+            [self.bots[name1], self.bots[name2]],
+            scores=[goals[0] + (goals[1] / 2), goals[2] + (goals[1] / 2)],
         )
 
     def getSkill(self, name, elo=False):
@@ -41,11 +42,23 @@ class TournamentSkill:
         named_ranks.sort()
         return [(r[1], self.getSkill(r[1], elo=True)) for r in named_ranks]
 
-    def getModelsDF(self):
-        return pd.DataFrame(
-            [
-                [n, pls.mu, pls.sigma, self.getSkill(n, elo=True)]
-                for n, (pls,) in self.bots.items()
-            ],
-            columns=["name", "mu", "sigma", "elo"],
+    def getModelsDF(self, matches):
+        df = (
+            pd.DataFrame(
+                [
+                    [n, pls.mu, pls.sigma, self.getSkill(n, elo=True), 0, 0, 0]
+                    for n, (pls,) in self.bots.items()
+                ],
+                columns=["name", "mu", "sigma", "elo", "win", "draw", "loss"],
+            )
+            .set_index("name", drop=True)
+            .sort_values("elo", ascending=False)
         )
+        for _, m1, m2, *goals in matches.itertuples():
+            df.loc[m1, "win"] += goals[0]
+            df.loc[m1, "draw"] += goals[1]
+            df.loc[m1, "loss"] += goals[2]
+            df.loc[m2, "win"] += goals[2]
+            df.loc[m2, "draw"] += goals[1]
+            df.loc[m2, "loss"] += goals[0]
+        return df
