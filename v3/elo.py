@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from time import time
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
+import arguably
 
 model_paths = [os.path.join("data/compare", f) for f in os.listdir("data/compare")]
 models = [Model(p) for p in model_paths]
@@ -54,11 +57,38 @@ def chooseTwo(ts, temp=2):
     return np.random.choice(list(ts.bots.keys()), 2, p=probs, replace=False)
 
 
-for _ in range(100):
-    # print(ts.getModelsDF(matches).sort_values("name"), "\n")
-    print(ts.getModelsDF(matches), "\n")
-    n1, n2 = chooseTwo(ts, temp=0.1)
-    # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
-    goals = sim_match(names_to_models[n1], names_to_models[n2], 5)
-    ts.match(n1, n2, goals)
-    logMatch(n1, n2, goals)
+write_lock = Lock()
+
+
+def run(args):
+    id, render, speed = args
+    if id != 0:
+        render = False
+        speed = None
+    print(f"Thread {id} started")
+    for _ in range(5):
+        # print(ts.getModelsDF(matches).sort_values("name"), "\n")
+        if id == 0:
+            df = ts.getModelsDF(matches)
+            print(df, "TOTAL MATCHES:", df.sum(["win", "draw"]))
+        n1, n2 = chooseTwo(ts, temp=0.8)
+        # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
+        goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render, speed)
+        ts.match(n1, n2, goals)
+        with write_lock:
+            logMatch(n1, n2, goals)
+
+
+@arguably.command
+def main(*, threads: int = 2, render: bool = False, speed: float = None):
+    print("Starting ELO arena with", threads, "threads")
+    with ThreadPoolExecutor(threads) as executor:
+        try:
+            executor.map(run, [(i, render, speed) for i in range(threads)])
+        except KeyboardInterrupt:
+            print("CTRL-C caught, exiting")
+            exit(0)
+
+
+if __name__ == "__main__":
+    arguably.run()
