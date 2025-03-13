@@ -413,3 +413,5 @@ time,Model1,Model2,Orange,Tie,Blue
 1741850990.5596256,curriculum_102m,curriculum_tiny_60m,0.0,5.0,0.0
 1741851215.9087734,curriculum_wide_60m,gentle_bigcrit_104m,1.0,2.0,2.0
 1741851215.9227724,curriculum_wide_30m,curriculum_wide_114m,3.0,2.0,0.0
+1741851280.0133789,curriculum_wide_114m,child_654m,2.0,0.0,3.0
+1741851280.0333824,curriculum_wide_60m,curriculum_wide_114m,0.0,1.0,4.0
