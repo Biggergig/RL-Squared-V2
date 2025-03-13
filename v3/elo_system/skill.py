@@ -4,7 +4,7 @@ import pandas as pd
 
 class TournamentSkill:
     def __init__(self):
-        self.model = PlackettLuce()
+        self.model = PlackettLuce(balance=True)
         self.bots = {}
 
     def add_player(self, name):

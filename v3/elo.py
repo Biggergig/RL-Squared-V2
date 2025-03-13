@@ -79,7 +79,7 @@ def run(args):
                 print(f"{id}: writing", n1, n2, goals)
                 logMatch(n1, n2, goals)
         if id == 0:
-            df = ts.getModelsDF(matches)
+            df = ts.getModelsDF(matches).sort_values("name")
             print(df, "\nTOTAL GOALS:", df.win.sum() + df.draw.sum() / 2)
 
 
