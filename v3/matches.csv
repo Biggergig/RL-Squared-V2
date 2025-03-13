@@ -915,3 +915,13 @@ time,Model1,Model2,Orange,Tie,Blue
 1741859092.4884746,gentle_33m,curriculum_wide_30m,0.0,14.0,1.0
 1741859092.502004,gentle_33m,gentle_bigcrit_38m,1.0,14.0,0.0
 1741859092.516303,gentle_33m,curriculum_tiny_30m,0.0,15.0,0.0
+1741859577.236883,default_deep_136m,pure_ppo_780m,0.0,15.0,0.0
+1741859577.256614,gentle_bigcrit_38m,curriculum_tiny_30m,0.0,15.0,0.0
+1741859577.3147025,default_deep_136m,pure_ppo_780m,0.0,15.0,0.0
+1741859577.3303158,gentle_bigcrit_38m,curriculum_tiny_30m,1.0,14.0,0.0
+1741859598.5725422,default_deep_136m,pure_ppo_780m,1.0,14.0,0.0
+1741859598.5890708,gentle_bigcrit_38m,curriculum_tiny_30m,0.0,15.0,0.0
+1741859687.8791478,curriculum_tiny_100m,grounded_60m,1.0,12.0,2.0
+1741859687.8961787,gentle_105m,curriculum_wide_114m,6.0,8.0,1.0
+1741859737.537579,pure_ppo_780m,curriculum_tiny_30m,0.0,15.0,0.0
+1741859737.5521016,pure_ppo_780m,curriculum_tiny_30m,0.0,15.0,0.0
