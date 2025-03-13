@@ -6,8 +6,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from time import time
-from concurrent.futures import ThreadPoolExecutor
-from threading import Lock
+from multiprocessing import Pool, Lock
 import arguably
 
 model_paths = [os.path.join("data/compare", f) for f in os.listdir("data/compare")]
@@ -28,20 +27,11 @@ for _, m1, m2, *goals in tqdm(matches.itertuples(), desc="Loading matches"):
 
 def logMatch(name1, name2, goals):
     global matches
+    matches = pd.read_csv("matches.csv", index_col=0)
     matches.loc[time()] = [name1, name2, *goals]
     # matches.index += 1
     matches.sort_index()
     matches.to_csv("matches.csv", index=True)
-
-
-# for i in range(len(models)):
-#     for j in range(i + 1, len(models)):
-#         goals = sim_match(models[i], models[j], 3, render=False)
-#         ts.match(models[i].name, models[j].name, goals)
-#         logMatch(models[i], models[j], goals)
-
-# print(ts.bots)
-# print(ts.getRanks())
 
 
 def softmax(x, temp=1):
@@ -57,37 +47,51 @@ def chooseTwo(ts, temp=2):
     return np.random.choice(list(ts.bots.keys()), 2, p=probs, replace=False)
 
 
-write_lock = Lock()
+def init_child(lock_):
+    global lock
+    lock = lock_
 
 
 def run(args):
-    id, render, speed = args
+    id, batch_size, iters, render, speed = args
     if id != 0:
         render = False
         speed = None
     print(f"Thread {id} started")
-    for _ in range(5):
-        # print(ts.getModelsDF(matches).sort_values("name"), "\n")
+    for _ in range(iters):
+        batch = []
+        for _ in range(batch_size):
+            # print(ts.getModelsDF(matches).sort_values("name"), "\n")
+
+            n1, n2 = chooseTwo(ts, temp=0.8)
+            # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
+            goals = sim_match(
+                names_to_models[n1], names_to_models[n2], 5, render, speed
+            )
+            ts.match(n1, n2, goals)
+            batch.append([n1, n2, goals])
+        with lock:
+            for n1, n2, goals in batch:
+                print(f"{id}: writing", n1, n2, goals)
+                logMatch(n1, n2, goals)
         if id == 0:
             df = ts.getModelsDF(matches)
-            print(df, "TOTAL MATCHES:", df.sum(["win", "draw"]))
-        n1, n2 = chooseTwo(ts, temp=0.8)
-        # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
-        goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render, speed)
-        ts.match(n1, n2, goals)
-        with write_lock:
-            logMatch(n1, n2, goals)
+            print(df, "\nTOTAL MATCHES:", df.win.sum() + df.draw.sum() / 2)
 
 
 @arguably.command
-def main(*, threads: int = 2, render: bool = False, speed: float = None):
+def main(
+    *,
+    threads: int = 2,
+    batch_size: int = 5,
+    iters: int = 2,
+    render: bool = False,
+    speed: float = None,
+):
     print("Starting ELO arena with", threads, "threads")
-    with ThreadPoolExecutor(threads) as executor:
-        try:
-            executor.map(run, [(i, render, speed) for i in range(threads)])
-        except KeyboardInterrupt:
-            print("CTRL-C caught, exiting")
-            exit(0)
+    write_lock = Lock()
+    with Pool(threads, initializer=init_child, initargs=(write_lock,)) as pool:
+        pool.map(run, [(i, batch_size, iters, render, speed) for i in range(threads)])
 
 
 if __name__ == "__main__":
