@@ -1,4 +1,5 @@
 from openskill.models import PlackettLuce
+import pandas as pd
 
 
 class TournamentSkill:
@@ -39,3 +40,12 @@ class TournamentSkill:
         ]
         named_ranks.sort()
         return [(r[1], self.getSkill(r[1], elo=True)) for r in named_ranks]
+
+    def getModelsDF(self):
+        return pd.DataFrame(
+            [
+                [n, pls.mu, pls.sigma, self.getSkill(n, elo=True)]
+                for n, (pls,) in self.bots.items()
+            ],
+            columns=["name", "mu", "sigma", "elo"],
+        )
