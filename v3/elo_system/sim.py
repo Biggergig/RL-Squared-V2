@@ -32,5 +32,5 @@ def sim_match(model1, model2, n=100, render=False, speed=None):
         goals[-int(state["result"]) + 1] += 1.0
         pbar.set_description(f"{model1.name} vs {model2.name} / Goals: {goals}")
 
-    env.close()
+    # env.close()
     return goals

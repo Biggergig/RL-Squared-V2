@@ -15,7 +15,8 @@ class TournamentSkill:
         goals = [float(g) for g in goals]
         for n in [name1, name2]:
             if n not in self.bots:
-                self.add_player(n)
+                # self.add_player(n)
+                return
         self.bots[name1], self.bots[name2] = self.model.rate(
             [self.bots[name1], self.bots[name2]],
             scores=[goals[0] + (goals[1] / 2), goals[2] + (goals[1] / 2)],
@@ -55,6 +56,8 @@ class TournamentSkill:
             .sort_values("elo", ascending=False)
         )
         for _, m1, m2, *goals in matches.itertuples():
+            if m1 not in self.bots or m2 not in self.bots:
+                continue
             df.loc[m1, "win"] += goals[0]
             df.loc[m1, "draw"] += goals[1]
             df.loc[m1, "loss"] += goals[2]
