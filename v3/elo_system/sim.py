@@ -21,8 +21,8 @@ def sim_match(model1, model2, n=100, render=False, speed=None):
         t0 = time.time()
         starttime = time.time()
         while not done:
-            # if steps % tick_skip == 0:
-            actions = np.vstack([m.act(obs[i]) for i, m in enumerate(models)])
+            if steps % tick_skip == 0:
+                actions = np.vstack([m.act(obs[i]) for i, m in enumerate(models)])
             obs, reward, done, state = env.step(actions)
             steps += 1
             if render:

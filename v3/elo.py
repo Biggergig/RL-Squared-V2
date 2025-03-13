@@ -70,7 +70,7 @@ def run(args):
             n1, n2 = chooseTwo(ts, temp=0.8)
             # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
             goals = sim_match(
-                names_to_models[n1], names_to_models[n2], 5, render, speed
+                names_to_models[n1], names_to_models[n2], 20, render, speed
             )
             ts.match(n1, n2, goals)
             batch.append([n1, n2, goals])
