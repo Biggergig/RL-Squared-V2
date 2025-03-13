@@ -16,7 +16,7 @@ def sim_match(elo, model1, model2, n=100, render=False, speed=None):
     goals = [0, 0, 0]
     # orange, timeout, blue
     for _ in (pbar := tqdm(range(n))):
-        pbar.set_description(f"Goals: {goals}")
+        pbar.set_description(f"{model1.name} vs {model2.name} / Goals: {goals}")
         obs = env.reset()
 
         done = False

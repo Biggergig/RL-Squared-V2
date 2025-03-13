@@ -9,8 +9,10 @@ default_env = build_env()
 
 
 class Model:
-    def __init__(self, path, name, deterministic=False):
+    def __init__(self, path, name=None, deterministic=False):
         # 400m curriculum not deterministic beat deterministic
+        if name is None:
+            name = os.path.basename(path)
         self.name = name
         inp_shape = default_env.observation_space.shape[0]
         action_space = default_env.action_space
