@@ -1,5 +1,8 @@
 import time
 import numpy as np
+import json
+import os
+import torch
 
 import rlgym_sim
 
@@ -9,6 +12,7 @@ from rlgym_sim.utils.terminal_conditions.common_conditions import *
 from rlgym_sim.utils import common_values
 from rlgym_sim.utils.action_parsers import DiscreteAction
 from rlgym_sim.utils.reward_functions.common_rewards import EventReward
+from rlgym_ppo.ppo.multi_discrete_policy import MultiDiscreteFF
 
 game_tick_rate = 120
 tick_skip = 8
@@ -51,8 +55,40 @@ def build_env():
     return env
 
 
+model_1_path = "data\\checkpoints\\curriculum\\remote\\curriculum\\1\\405360906"
+model_2_path = None
+
+
+class Model:
+    def __init__(self, path, inp_shape, action_space, device):
+        if path is None:
+            self.model = None
+            self.outspace = action_space
+            return
+
+        BOOK_KEEPING = json.load(
+            open(os.path.join(path, "BOOK_KEEPING_VARS.json"), "r")
+        )
+        layer_size = BOOK_KEEPING["wandb_config"]["policy_layer_sizes"]
+        self.model = MultiDiscreteFF(inp_shape, layer_size, device)
+        self.model.load_state_dict(torch.load(os.path.join(path, "PPO_POLICY.pt")))
+
+    def act(self, obs):
+        if self.model is None:
+            return self.outspace.sample() * 0
+        return self.model.get_action(obs, deterministic=True)[0]
+
+
 env = build_env()
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+models = [
+    Model(p, env.observation_space.shape[0], env.action_space, device)
+    for p in (model_1_path, model_2_path)
+]
+# print([m.model for m in models])
+# exit()
 goals = [0, 0, 0]
+# orange, timeout, blue
 for _ in range(10):
     obs = env.reset()
 
@@ -61,10 +97,8 @@ for _ in range(10):
     t0 = time.time()
     starttime = time.time()
     while not done:
-        actions_1 = env.action_space.sample()
-        actions_2 = env.action_space.sample()
-        actions = np.vstack([actions_1, actions_2])
-        new_obs, reward, done, state = env.step(actions)
+        actions = np.vstack([m.act(obs[i]) for i, m in enumerate(models)])
+        obs, reward, done, state = env.step(actions)
         env.render()
         for i in range(2):
             goals[i] += reward[i]
@@ -73,11 +107,9 @@ for _ in range(10):
         # Sleep to keep the game in real time
         # time.sleep(max(0, starttime + steps / TPS - time.time()))
     goals[int(state["result"]) + 1] += 1
-    print(goals)
-
     length = time.time() - t0
     print(
-        "Step time: {:1.5f} | Episode time: {:.2f} | Episode Reward: {}".format(
+        "Step time: {:1.5f} | Episode time: {:.2f} | Goals: {}".format(
             length / steps, length, goals
         )
     )
