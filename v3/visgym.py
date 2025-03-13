@@ -52,18 +52,17 @@ def build_env():
 
 
 env = build_env()
-while True:
+goals = [0, 0, 0]
+for _ in range(10):
     obs = env.reset()
 
     done = False
     steps = 0
-    goals = [0, 0, 0]
     t0 = time.time()
     starttime = time.time()
     while not done:
         actions_1 = env.action_space.sample()
         actions_2 = env.action_space.sample()
-        actions_2 *= 0
         actions = np.vstack([actions_1, actions_2])
         new_obs, reward, done, state = env.step(actions)
         env.render()
@@ -73,8 +72,8 @@ while True:
         # print(env.step(actions))
         # Sleep to keep the game in real time
         # time.sleep(max(0, starttime + steps / TPS - time.time()))
-    print(state["result"])
     goals[int(state["result"]) + 1] += 1
+    print(goals)
 
     length = time.time() - t0
     print(
@@ -82,4 +81,3 @@ while True:
             length / steps, length, goals
         )
     )
-    break
