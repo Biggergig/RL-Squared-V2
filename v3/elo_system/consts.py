@@ -1,4 +1,4 @@
-timeout_seconds = 15
+timeout_seconds = 30
 
 
 game_tick_rate = 120

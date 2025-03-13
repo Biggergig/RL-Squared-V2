@@ -9,6 +9,9 @@ def sim_match(elo, model1, model2, n=100, render=False, speed=None):
     env = build_env()
 
     models = [model1, model2]
+    for m in models:
+        if m.name not in elo.ratingDict:
+            elo.addPlayer(m.name)
 
     goals = [0, 0, 0]
     # orange, timeout, blue
@@ -30,11 +33,12 @@ def sim_match(elo, model1, model2, n=100, render=False, speed=None):
                 if speed is not None:
                     time.sleep(max(0, starttime + steps / (TPS * speed) - time.time()))
         goals[-int(state["result"]) + 1] += 1
-        length = time.time() - t0
-        # print(
-        #     "Step time: {:1.5f} | Episode time: {:.2f} | Goals: {}".format(
-        #         length / steps, length, goals
-        #     )
-        # )
+        if state["result"] == 1:
+            elo.gameOver(models[0].name, models[1].name)
+        elif state["result"] == 0:
+            elo.gameOver(models[0].name, models[1].name, tie=True)
+        elif state["result"] == -1:
+            elo.gameOver(models[1].name, models[0].name)
+
     env.close()
     return goals
