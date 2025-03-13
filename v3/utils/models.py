@@ -18,7 +18,7 @@ def model_selector(model_name, phase):
             (AlignBallGoal(), 0.1),
             (SaveBoostReward(), 0.1),
         )
-    if model_name.startswith("grounded"):
+    elif model_name.startswith("grounded"):
         # print("GENTLE_PHASE1")
         rewards = (
             (EventReward(touch=1), 1, "touch"),
@@ -31,7 +31,7 @@ def model_selector(model_name, phase):
             (SaveBoostReward(), 0.1),
             (InAirReward(), -0.75, "air_penalty"),
         )
-    if model_name == "curriculum":
+    elif model_name.startswith("curriculum"):
         if phase == 1:
             rewards = (
                 # Touch stays full until 20m then drops until 80m
@@ -113,6 +113,8 @@ def model_selector(model_name, phase):
                     "Curriculum 0-20k-30k-50k",
                 ),
             )
+    else:
+        raise ValueError(f"Unknown model name: {model_name}")
 
     reward_fn = CombinedRewardLog.from_zipped(*rewards)
 
