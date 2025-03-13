@@ -1,4 +1,8 @@
 time,Model1,Model2,Orange,Tie,Blue
+1741852323.1277163,grounded_60m,default_deep_136m,3.0,2.0,0.0
+1741852323.1490638,curriculum_61m,gentle_bigcrit_104m,1.0,3.0,1.0
+1741852368.2485368,grounded_60m,default_deep_136m,5.0,0.0,0.0
+1741852368.2575688,curriculum_61m,gentle_bigcrit_104m,0.0,5.0,0.0
 1741844004.6229413,curriculum_102m,curriculum_405m,0.0,0.0,5.0
 1741844029.1641364,curriculum_61m,curriculum_102m,2.0,2.0,1.0
 1741844050.3422785,curriculum_30m,curriculum_102m,0.0,4.0,1.0
@@ -517,13 +521,4 @@ time,Model1,Model2,Orange,Tie,Blue
 1741852448.1723049,default_deep_136m,curriculum_306m,0.0,20.0,0.0
 1741852450.4404829,gentle_bigcrit_38m,curriculum_slow_100m,0.0,20.0,0.0
 1741852450.4524798,child_654m,bulldog_470m,2.0,16.0,2.0
-1741852450.461481,deeper_gentle_128m,gentle_bigcrit_104m,0.0,20.0,0.0
-1741852533.0845,gentle_tiny_100m,pure_ppo_780m,0.0,20.0,0.0
-1741852533.1085002,curriculum_tiny_30m,sparse_60m,0.0,20.0,0.0
-1741852533.1295044,curriculum_306m,gentle_260m,1.0,19.0,0.0
-1741852533.7344964,curriculum_306m,curriculum_tiny_30m,4.0,16.0,0.0
-1741852533.7574985,sparse_60m,gentle_105m,2.0,11.0,7.0
-1741852533.7744951,gentle_33m,curriculum_wide_114m,1.0,18.0,1.0
-1741852536.4012415,bulldog_470m,curriculum_102m,1.0,19.0,0.0
-1741852536.4161942,curriculum_405m,curriculum_30m,3.0,17.0,0.0
-1741852536.4301958,curriculum_tiny_30m,deeper_gentle_128m,0.0,20.0,0.0
+1741852450.4614813,deeper_gentle_128m,gentle_bigcrit_104m,0.0,20.0,0.0
