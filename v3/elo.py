@@ -9,7 +9,9 @@ from time import time
 from multiprocessing import Pool, Lock
 import arguably
 
-model_paths = [os.path.join("data/compare", f) for f in os.listdir("data/compare")]
+model_paths = [
+    os.path.join("elo_system/compare", f) for f in os.listdir("data/compare")
+]
 models = [Model(p) for p in model_paths]
 
 names_to_models = {m.name: m for m in models}
