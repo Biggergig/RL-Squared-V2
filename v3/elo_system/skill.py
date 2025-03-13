@@ -44,16 +44,20 @@ class TournamentSkill:
         return [(r[1], self.getSkill(r[1], elo=True)) for r in named_ranks]
 
     def getModelsDF(self, matches):
+        df = pd.DataFrame(
+            [
+                [n, pls.mu, pls.sigma, self.getSkill(n, elo=True), 0, 0, 0]
+                for n, (pls,) in self.bots.items()
+            ],
+            columns=["name", "mu", "sigma", "elo", "win", "draw", "loss"],
+        )
+        ranks, rank_prob = zip(
+            *self.model.predict_rank([self.bots[n] for n in df["name"]])
+        )
         df = (
-            pd.DataFrame(
-                [
-                    [n, pls.mu, pls.sigma, self.getSkill(n, elo=True), 0, 0, 0]
-                    for n, (pls,) in self.bots.items()
-                ],
-                columns=["name", "mu", "sigma", "elo", "win", "draw", "loss"],
-            )
-            .set_index("name", drop=True)
-            .sort_values("elo", ascending=False)
+            df.assign(rank=ranks, rank_prob=rank_prob)
+            .set_index("name")
+            .sort_values("rank")
         )
         for _, m1, m2, *goals in matches.itertuples():
             if m1 not in self.bots or m2 not in self.bots:
