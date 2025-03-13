@@ -1,4 +1,5 @@
 import time
+import numpy as np
 
 import rlgym_sim
 
@@ -19,9 +20,10 @@ while True:
     while not done:
         actions_1 = env.action_space.sample()
         actions_2 = env.action_space.sample()
-        print(actions_1.reshape((-1, 8)))
-        actions = [actions_1, actions_2]
-        print(actions)
+        # print(actions_1.reshape((-1, 8)))
+        # exit(0)
+        actions = np.vstack([actions_1, actions_2])
+        # print(actions)
         new_obs, reward, done, state = env.step(actions)
         env.render()
         ep_reward += reward[0]

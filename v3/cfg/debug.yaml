@@ -3,7 +3,7 @@ _name: debug
 _phase: 1
 
 # Learning params
-ts_per_iteration: 10_000
+ts_per_iteration: 100
 ppo_epochs: 3
 
 # Model params
@@ -15,10 +15,12 @@ checkpoint_load_folder: null
 save_every_ts: 10_000_000
 
 # CPU SPM optimization
-n_proc: 4
+n_proc: 1
 
 # GPU SPM optimization
-ppo_minibatch_size: 10_000
+ppo_minibatch_size: 100
 
 # Rendering
 render: true
+
+log_to_wandb: false
