@@ -57,23 +57,24 @@ while True:
 
     done = False
     steps = 0
-    goals = [0, 0]
+    goals = [0, 0, 0]
     t0 = time.time()
     starttime = time.time()
     while not done:
         actions_1 = env.action_space.sample()
         actions_2 = env.action_space.sample()
+        actions_2 *= 0
         actions = np.vstack([actions_1, actions_2])
         new_obs, reward, done, state = env.step(actions)
-        print(state)
         env.render()
         for i in range(2):
             goals[i] += reward[i]
         steps += 1
         # print(env.step(actions))
         # Sleep to keep the game in real time
-        time.sleep(max(0, starttime + steps / TPS - time.time()))
-    print(env)
+        # time.sleep(max(0, starttime + steps / TPS - time.time()))
+    print(state["result"])
+    goals[int(state["result"]) + 1] += 1
 
     length = time.time() - t0
     print(
