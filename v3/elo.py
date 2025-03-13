@@ -55,8 +55,9 @@ def chooseTwo(ts, temp=2):
 
 
 for _ in range(100):
-    print(ts.getModelsDF(matches).sort_values("name"), "\n")
-    n1, n2 = chooseTwo(ts, temp=0.6)
+    # print(ts.getModelsDF(matches).sort_values("name"), "\n")
+    print(ts.getModelsDF(matches), "\n")
+    n1, n2 = chooseTwo(ts, temp=0.1)
     # goals = sim_match(names_to_models[n1], names_to_models[n2], 5, render=True, speed=5)
     goals = sim_match(names_to_models[n1], names_to_models[n2], 5)
     ts.match(n1, n2, goals)
