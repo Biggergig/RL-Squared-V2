@@ -2,9 +2,13 @@ import torch
 import json
 import os
 from .elo_env import build_env
+from .consts import USE_GPU
 from rlgym_ppo.ppo.multi_discrete_policy import MultiDiscreteFF
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = (
+    torch.device("cuda:0" if torch.cuda.is_available() else "cpu") if USE_GPU else "cpu"
+)
+
 default_env = build_env()
 
 
@@ -28,6 +32,7 @@ class Model:
         layer_size = BOOK_KEEPING["wandb_config"]["policy_layer_sizes"]
         self.model = MultiDiscreteFF(inp_shape, layer_size, device)
         self.model.load_state_dict(torch.load(os.path.join(path, "PPO_POLICY.pt")))
+        # print(self.name, "is loaded onto", device)
 
     def act(self, obs):
         if self.model is None:

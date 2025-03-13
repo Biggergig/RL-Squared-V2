@@ -7,24 +7,35 @@ class TournamentSkill:
         self.bots = {}
 
     def add_player(self, name):
+        # print("adding player", name)
         self.bots[name] = [self.model.rating(name=name)]
 
-    def match(self, model1, model2, goals):
-        name1, name2 = model1.name, model2.name
+    def match(self, name1, name2, goals):
         goals = [float(g) for g in goals]
         for n in [name1, name2]:
             if n not in self.bots:
                 self.add_player(n)
         self.bots[name1], self.bots[name2] = self.model.rate(
-            [self.bots[name1], self.bots[name2]], weights=[[goals[0]], [goals[1]]]
+            [self.bots[name1], self.bots[name2]], scores=[goals[0], goals[2]]
         )
 
-    def getSkill(self, name):
+    def getSkill(self, name, elo=False):
+        if elo:
+            plr = self.bots[name][0]
+            return plr.ordinal(alpha=200 / plr.sigma, target=1500)
         return self.bots[name][0]
 
-    def ranks(self):
-        return [
-            *zip(
-                list(self.bots.values()), self.model.predict_rank([*self.bots.values()])
-            )
+    def getElos(self):
+        elo = {b: self.getSkill(b, elo=True) for b in self.bots}
+        return sorted(elo.items(), key=lambda x: x[1])
+
+    def getRanks(self):
+        bot_names, bot_ranks = zip(*self.bots.items())
+        # print(bot_names, bot_ranks)
+
+        named_ranks = [
+            (i, name, p)
+            for name, (i, p) in zip(bot_names, self.model.predict_rank(list(bot_ranks)))
         ]
+        named_ranks.sort()
+        return [(r[1], self.getSkill(r[1], elo=True)) for r in named_ranks]
